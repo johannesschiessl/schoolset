@@ -30,7 +30,6 @@ import {
   StethoscopeIcon,
   TerminalIcon,
   TextIcon,
-  ToolboxIcon,
   TrophyIcon,
 } from "lucide-react";
 
