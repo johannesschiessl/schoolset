@@ -9,7 +9,6 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   PaperclipIcon,
-  MoreVerticalIcon,
 } from "lucide-react";
 import { AttachmentList } from "./AttachmentList";
 import { FileUpload } from "./FileUpload";
@@ -44,7 +43,6 @@ export function ItemRow({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(item.content);
   const [showUpload, setShowUpload] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleSave = async () => {
     if (editContent.trim() && editContent !== item.content) {
@@ -64,7 +62,7 @@ export function ItemRow({
   };
 
   return (
-    <li className="group">
+    <li>
       <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4">
         <div className="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-600 mt-2 flex-shrink-0" />
 
@@ -117,150 +115,72 @@ export function ItemRow({
         )}
 
         {canEdit && !isEditing && (
-          <>
-            {/* Desktop actions */}
-            <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              {!isFirst && (
-                <button
-                  onClick={onMoveUp}
-                  className={cn(
-                    "p-1.5 rounded-lg",
-                    "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                    "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
-                  )}
-                  title="Move up"
-                >
-                  <ArrowUpIcon className="size-4" />
-                </button>
-              )}
-              {!isLast && (
-                <button
-                  onClick={onMoveDown}
-                  className={cn(
-                    "p-1.5 rounded-lg",
-                    "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                    "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
-                  )}
-                  title="Move down"
-                >
-                  <ArrowDownIcon className="size-4" />
-                </button>
-              )}
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            {!isFirst && (
               <button
-                onClick={() => setShowUpload(true)}
+                onClick={onMoveUp}
                 className={cn(
                   "p-1.5 rounded-lg",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                  "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                  "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                  "transition-colors"
                 )}
-                title="Add attachment"
+                title="Move up"
               >
-                <PaperclipIcon className="size-4" />
+                <ArrowUpIcon className="size-4" />
               </button>
+            )}
+            {!isLast && (
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={onMoveDown}
                 className={cn(
                   "p-1.5 rounded-lg",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                  "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                  "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                  "transition-colors"
                 )}
-                title="Edit"
+                title="Move down"
               >
-                <PencilIcon className="size-4" />
+                <ArrowDownIcon className="size-4" />
               </button>
-              <button
-                onClick={handleDelete}
-                className={cn(
-                  "p-1.5 rounded-lg",
-                  "hover:bg-red-100 dark:hover:bg-red-900/30",
-                  "text-neutral-400 hover:text-red-600"
-                )}
-                title="Delete"
-              >
-                <TrashIcon className="size-4" />
-              </button>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="relative sm:hidden">
-              <button
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className={cn(
-                  "p-2 rounded-lg -mr-1",
-                  "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                  "text-neutral-400"
-                )}
-              >
-                <MoreVerticalIcon className="size-5" />
-              </button>
-
-              {/* Mobile dropdown menu */}
-              {showMobileMenu && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setShowMobileMenu(false)}
-                  />
-                  <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 py-1 min-w-36">
-                    {!isFirst && (
-                      <button
-                        onClick={() => {
-                          onMoveUp();
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-3"
-                      >
-                        <ArrowUpIcon className="size-4" />
-                        Move up
-                      </button>
-                    )}
-                    {!isLast && (
-                      <button
-                        onClick={() => {
-                          onMoveDown();
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-3"
-                      >
-                        <ArrowDownIcon className="size-4" />
-                        Move down
-                      </button>
-                    )}
-                    <button
-                      onClick={() => {
-                        setShowUpload(true);
-                        setShowMobileMenu(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-3"
-                    >
-                      <PaperclipIcon className="size-4" />
-                      Attach file
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsEditing(true);
-                        setShowMobileMenu(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-3"
-                    >
-                      <PencilIcon className="size-4" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleDelete();
-                        setShowMobileMenu(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 flex items-center gap-3"
-                    >
-                      <TrashIcon className="size-4" />
-                      Delete
-                    </button>
-                  </div>
-                </>
+            )}
+            <button
+              onClick={() => setShowUpload(true)}
+              className={cn(
+                "p-1.5 rounded-lg",
+                "hover:bg-neutral-100 dark:hover:bg-neutral-700",
+                "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                "transition-colors"
               )}
-            </div>
-          </>
+              title="Add attachment"
+            >
+              <PaperclipIcon className="size-4" />
+            </button>
+            <button
+              onClick={() => setIsEditing(true)}
+              className={cn(
+                "p-1.5 rounded-lg",
+                "hover:bg-neutral-100 dark:hover:bg-neutral-700",
+                "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                "transition-colors"
+              )}
+              title="Edit"
+            >
+              <PencilIcon className="size-4" />
+            </button>
+            <button
+              onClick={handleDelete}
+              className={cn(
+                "p-1.5 rounded-lg",
+                "hover:bg-red-100 dark:hover:bg-red-900/30",
+                "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
+                "transition-colors"
+              )}
+              title="Delete"
+            >
+              <TrashIcon className="size-4" />
+            </button>
+          </div>
         )}
       </div>
 

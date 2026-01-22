@@ -15,7 +15,6 @@ import {
   TrashIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  MoreVerticalIcon,
 } from "lucide-react";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -60,7 +59,6 @@ export function LessonCard({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [newItemContent, setNewItemContent] = useState("");
   const [showNewItem, setShowNewItem] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleSaveName = async () => {
     if (editName.trim() && editName !== lesson.name) {
@@ -162,165 +160,77 @@ export function LessonCard({
         )}
 
         {canEdit && (
-          <>
-            {/* Desktop actions */}
-            <div className="hidden sm:flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowColorPicker(true)}
+              className={cn(
+                "p-1.5 rounded-lg",
+                "hover:bg-neutral-100 dark:hover:bg-neutral-700",
+                "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                "transition-colors"
+              )}
+              title="Change color"
+            >
+              <div
+                className="w-4 h-4 rounded-full"
+                style={{
+                  backgroundColor: `var(--color-${lesson.color}-500, #6b7280)`,
+                }}
+              />
+            </button>
+            {!isFirst && (
               <button
-                onClick={() => setShowColorPicker(true)}
+                onClick={onMoveUp}
                 className={cn(
                   "p-1.5 rounded-lg",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                  "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300",
+                  "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                   "transition-colors"
                 )}
-                title="Change color"
+                title="Move up"
               >
-                <div
-                  className="w-4 h-4 rounded-full"
-                  style={{
-                    backgroundColor: `var(--color-${lesson.color}-500, #6b7280)`,
-                  }}
-                />
+                <ArrowUpIcon className="size-4" />
               </button>
-              {!isFirst && (
-                <button
-                  onClick={onMoveUp}
-                  className={cn(
-                    "p-1.5 rounded-lg",
-                    "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                    "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300",
-                    "transition-colors"
-                  )}
-                  title="Move up"
-                >
-                  <ArrowUpIcon className="size-4" />
-                </button>
-              )}
-              {!isLast && (
-                <button
-                  onClick={onMoveDown}
-                  className={cn(
-                    "p-1.5 rounded-lg",
-                    "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                    "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300",
-                    "transition-colors"
-                  )}
-                  title="Move down"
-                >
-                  <ArrowDownIcon className="size-4" />
-                </button>
-              )}
+            )}
+            {!isLast && (
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={onMoveDown}
                 className={cn(
                   "p-1.5 rounded-lg",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                  "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300",
+                  "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                   "transition-colors"
                 )}
-                title="Edit name"
+                title="Move down"
               >
-                <PencilIcon className="size-4" />
+                <ArrowDownIcon className="size-4" />
               </button>
-              <button
-                onClick={handleDelete}
-                className={cn(
-                  "p-1.5 rounded-lg",
-                  "hover:bg-red-100 dark:hover:bg-red-900/30",
-                  "text-neutral-400 hover:text-red-600",
-                  "transition-colors"
-                )}
-                title="Delete lesson"
-              >
-                <TrashIcon className="size-4" />
-              </button>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="relative sm:hidden" onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className={cn(
-                  "p-2 rounded-lg",
-                  "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                  "text-neutral-500"
-                )}
-              >
-                <MoreVerticalIcon className="size-5" />
-              </button>
-
-              {/* Mobile dropdown menu */}
-              {showMobileMenu && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setShowMobileMenu(false)}
-                  />
-                  <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 py-1 min-w-40">
-                    <button
-                      onClick={() => {
-                        setShowColorPicker(true);
-                        setShowMobileMenu(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-3"
-                    >
-                      <div
-                        className="w-4 h-4 rounded-full"
-                        style={{
-                          backgroundColor: `var(--color-${lesson.color}-500, #6b7280)`,
-                        }}
-                      />
-                      Change color
-                    </button>
-                    {!isFirst && (
-                      <button
-                        onClick={() => {
-                          onMoveUp();
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-3"
-                      >
-                        <ArrowUpIcon className="size-4" />
-                        Move up
-                      </button>
-                    )}
-                    {!isLast && (
-                      <button
-                        onClick={() => {
-                          onMoveDown();
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-3"
-                      >
-                        <ArrowDownIcon className="size-4" />
-                        Move down
-                      </button>
-                    )}
-                    <button
-                      onClick={() => {
-                        setIsEditing(true);
-                        setShowMobileMenu(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-3"
-                    >
-                      <PencilIcon className="size-4" />
-                      Edit name
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleDelete();
-                        setShowMobileMenu(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 flex items-center gap-3"
-                    >
-                      <TrashIcon className="size-4" />
-                      Delete
-                    </button>
-                  </div>
-                </>
+            )}
+            <button
+              onClick={() => setIsEditing(true)}
+              className={cn(
+                "p-1.5 rounded-lg",
+                "hover:bg-neutral-100 dark:hover:bg-neutral-700",
+                "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                "transition-colors"
               )}
-            </div>
-          </>
+              title="Edit name"
+            >
+              <PencilIcon className="size-4" />
+            </button>
+            <button
+              onClick={handleDelete}
+              className={cn(
+                "p-1.5 rounded-lg",
+                "hover:bg-red-100 dark:hover:bg-red-900/30",
+                "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
+                "transition-colors"
+              )}
+              title="Delete lesson"
+            >
+              <TrashIcon className="size-4" />
+            </button>
+          </div>
         )}
 
         <button

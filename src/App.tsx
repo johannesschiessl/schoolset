@@ -141,6 +141,7 @@ export default function App() {
             "fixed md:static inset-y-0 left-0 z-40 md:z-auto",
             "transform transition-transform duration-200 ease-in-out md:transform-none",
             "pt-14 md:pt-0", // Account for header on mobile
+            "bg-neutral-100 dark:bg-neutral-800 md:bg-transparent md:dark:bg-transparent", // Solid background on mobile
             sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           )}
         >

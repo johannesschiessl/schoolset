@@ -56,7 +56,7 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
   };
 
   return (
-    <aside className="w-72 md:w-64 bg-neutral-100 dark:bg-neutral-800/50 border-r border-neutral-200 dark:border-neutral-700 h-full flex flex-col">
+    <aside className="w-72 md:w-64 bg-neutral-100 dark:bg-neutral-800 md:dark:bg-neutral-800/50 border-r border-neutral-200 dark:border-neutral-700 h-full flex flex-col">
       <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
         <h2 className="font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
           <CalendarIcon className="size-5" />
@@ -78,7 +78,7 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
                 <button
                   onClick={() => onSelectDate(day.date)}
                   className={cn(
-                    "w-full text-left px-3 py-3 md:py-2 rounded-lg flex items-center justify-between group",
+                    "w-full text-left px-3 py-3 md:py-2 rounded-lg flex items-center justify-between",
                     "transition-colors active:scale-[0.98]",
                     selectedDate === day.date
                       ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
@@ -93,9 +93,9 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
                       onClick={(e) => handleDeleteDay(day._id, e)}
                       className={cn(
                         "p-1.5 rounded",
-                        "md:opacity-0 md:group-hover:opacity-100",
-                        "hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600",
-                        "transition-opacity"
+                        "hover:bg-red-100 dark:hover:bg-red-900/30",
+                        "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
+                        "transition-colors"
                       )}
                     >
                       <TrashIcon className="size-4" />
