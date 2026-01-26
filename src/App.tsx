@@ -1,14 +1,34 @@
 import { useState, useEffect, useCallback } from "react";
-import { getStoredPassword, getStoredRole, clearAuth, type Role } from "./lib/auth";
+import {
+  getStoredPassword,
+  getStoredRole,
+  clearAuth,
+  type Role,
+} from "./lib/auth";
 import { LoginScreen } from "./components/LoginScreen";
 import { DaySidebar } from "./components/DaySidebar";
 import { DayView } from "./components/DayView";
+import { ReportSidebar } from "./components/ReportSidebar";
+import { ReportView } from "./components/ReportView";
 import { LogOutIcon, MenuIcon, XIcon } from "lucide-react";
 import { cn } from "./lib/cn";
+
+type ViewType = "notes" | "reports";
 
 function getDateFromUrl(): string | null {
   const params = new URLSearchParams(window.location.search);
   return params.get("day");
+}
+
+function getViewFromUrl(): ViewType {
+  const params = new URLSearchParams(window.location.search);
+  const view = params.get("view");
+  return view === "reports" ? "reports" : "notes";
+}
+
+function getMonthFromUrl(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("month");
 }
 
 function setDateInUrl(date: string | null) {
@@ -18,6 +38,20 @@ function setDateInUrl(date: string | null) {
   } else {
     url.searchParams.delete("day");
   }
+  url.searchParams.delete("view");
+  url.searchParams.delete("month");
+  window.history.pushState({}, "", url.toString());
+}
+
+function setReportViewInUrl(month: string | null) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("view", "reports");
+  if (month) {
+    url.searchParams.set("month", month);
+  } else {
+    url.searchParams.delete("month");
+  }
+  url.searchParams.delete("day");
   window.history.pushState({}, "", url.toString());
 }
 
@@ -26,6 +60,8 @@ export default function App() {
   const [role, setRole] = useState<Role | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewType>("notes");
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
 
   // Check for existing auth on mount
   useEffect(() => {
@@ -37,14 +73,29 @@ export default function App() {
     }
   }, []);
 
-  // Initialize selected date from URL or default to today
+  // Initialize view and selected date/month from URL
   useEffect(() => {
-    const urlDate = getDateFromUrl();
-    if (urlDate) {
-      setSelectedDate(urlDate);
+    const view = getViewFromUrl();
+    setCurrentView(view);
+
+    if (view === "reports") {
+      const urlMonth = getMonthFromUrl();
+      if (urlMonth) {
+        setSelectedMonth(urlMonth);
+      } else {
+        // Default to current month
+        const now = new Date();
+        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        setSelectedMonth(currentMonth);
+      }
     } else {
-      const today = new Date().toISOString().split("T")[0];
-      setSelectedDate(today);
+      const urlDate = getDateFromUrl();
+      if (urlDate) {
+        setSelectedDate(urlDate);
+      } else {
+        const today = new Date().toISOString().split("T")[0];
+        setSelectedDate(today);
+      }
     }
   }, []);
 
@@ -64,6 +115,28 @@ export default function App() {
     setDateInUrl(date);
     setSidebarOpen(false); // Close sidebar on mobile after selection
   }, []);
+
+  const handleSelectMonth = useCallback((month: string) => {
+    setSelectedMonth(month);
+    setReportViewInUrl(month);
+    setSidebarOpen(false); // Close sidebar on mobile after selection
+  }, []);
+
+  const handleSwitchToNotes = useCallback(() => {
+    setCurrentView("notes");
+    const date = selectedDate || new Date().toISOString().split("T")[0];
+    setSelectedDate(date);
+    setDateInUrl(date);
+  }, [selectedDate]);
+
+  const handleSwitchToReports = useCallback(() => {
+    setCurrentView("reports");
+    const month =
+      selectedMonth ||
+      `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+    setSelectedMonth(month);
+    setReportViewInUrl(month);
+  }, [selectedMonth]);
 
   const handleLogin = (newRole: Role) => {
     setIsAuthenticated(true);
@@ -92,7 +165,7 @@ export default function App() {
               "p-2 rounded-lg md:hidden",
               "hover:bg-neutral-100 dark:hover:bg-neutral-800",
               "text-neutral-600 dark:text-neutral-400",
-              "transition-colors"
+              "transition-colors",
             )}
             aria-label="Toggle menu"
           >
@@ -105,6 +178,31 @@ export default function App() {
           <h1 className="font-bold text-lg text-neutral-900 dark:text-white">
             Mitschreiben
           </h1>
+          {/* View toggle */}
+          <div className="hidden sm:flex items-center gap-1 ml-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
+            <button
+              onClick={handleSwitchToNotes}
+              className={cn(
+                "px-3 py-1 rounded-md text-sm font-medium transition-colors",
+                currentView === "notes"
+                  ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
+                  : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
+              )}
+            >
+              Notizen
+            </button>
+            <button
+              onClick={handleSwitchToReports}
+              className={cn(
+                "px-3 py-1 rounded-md text-sm font-medium transition-colors",
+                currentView === "reports"
+                  ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
+                  : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
+              )}
+            >
+              Bericht
+            </button>
+          </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
@@ -116,7 +214,7 @@ export default function App() {
               "p-2 rounded-lg",
               "hover:bg-neutral-100 dark:hover:bg-neutral-800",
               "text-neutral-600 dark:text-neutral-400",
-              "transition-colors"
+              "transition-colors",
             )}
             title="Logout"
           >
@@ -142,15 +240,32 @@ export default function App() {
             "transform transition-transform duration-200 ease-in-out md:transform-none",
             "pt-14 md:pt-0", // Account for header on mobile
             "bg-neutral-100 dark:bg-neutral-800 md:bg-transparent md:dark:bg-transparent", // Solid background on mobile
-            sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+            sidebarOpen
+              ? "translate-x-0"
+              : "-translate-x-full md:translate-x-0",
           )}
         >
-          <DaySidebar selectedDate={selectedDate} onSelectDate={handleSelectDate} />
+          {currentView === "notes" ? (
+            <DaySidebar
+              selectedDate={selectedDate}
+              onSelectDate={handleSelectDate}
+            />
+          ) : (
+            <ReportSidebar
+              selectedMonth={selectedMonth}
+              onSelectMonth={handleSelectMonth}
+              onSwitchToNotes={handleSwitchToNotes}
+              onSwitchToReports={handleSwitchToReports}
+              currentView={currentView}
+            />
+          )}
         </div>
 
         {/* Main area */}
         <main className="flex-1 overflow-y-auto">
-          {selectedDate && <DayView date={selectedDate} />}
+          {currentView === "notes"
+            ? selectedDate && <DayView date={selectedDate} />
+            : selectedMonth && <ReportView month={selectedMonth} />}
         </main>
       </div>
     </div>

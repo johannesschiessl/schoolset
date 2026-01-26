@@ -13,6 +13,8 @@ import type * as days from "../days.js";
 import type * as files from "../files.js";
 import type * as items from "../items.js";
 import type * as lessons from "../lessons.js";
+import type * as reportItems from "../reportItems.js";
+import type * as reports from "../reports.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +28,8 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   items: typeof items;
   lessons: typeof lessons;
+  reportItems: typeof reportItems;
+  reports: typeof reports;
 }>;
 
 /**

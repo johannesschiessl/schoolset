@@ -26,4 +26,17 @@ export default defineSchema({
     filename: v.string(),
     contentType: v.string(),
   }).index("by_item", ["itemId"]),
+
+  // Activity reports (Tätigkeitsbericht)
+  reports: defineTable({
+    month: v.string(), // "YYYY-MM" format
+  }).index("by_month", ["month"]),
+
+  reportItems: defineTable({
+    reportId: v.id("reports"),
+    date: v.string(), // "YYYY-MM-DD" format
+    subject: v.string(),
+    description: v.string(), // markdown content
+    order: v.number(),
+  }).index("by_report", ["reportId"]),
 });
