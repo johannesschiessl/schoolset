@@ -41,7 +41,7 @@ export function IconPicker({ selected, onSelect, onClose }: IconPickerProps) {
             return (
               <button
                 key={option.name}
-                onClick={() => onSelect(option.name as TopicIcon)}
+                onClick={() => onSelect(option.name)}
                 className={cn(
                   "p-3 sm:p-3 rounded-lg flex items-center justify-center",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",

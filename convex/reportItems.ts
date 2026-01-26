@@ -83,7 +83,7 @@ export const update = mutation({
     if (args.subject !== undefined) updates.subject = args.subject;
     if (args.description !== undefined) updates.description = args.description;
 
-    await ctx.db.patch(args.itemId, updates);
+    await ctx.db.patch("reportItems", args.itemId, updates);
     return null;
   },
 });
@@ -99,7 +99,7 @@ export const reorder = mutation({
     if (!validatePassword(args.password, "editor")) {
       throw new Error("Invalid password");
     }
-    const item = await ctx.db.get(args.itemId);
+    const item = await ctx.db.get("reportItems", args.itemId);
     if (!item) throw new Error("Item not found");
 
     const oldOrder = item.order;
@@ -114,16 +114,16 @@ export const reorder = mutation({
     // Update orders
     for (const i of items) {
       if (i._id === args.itemId) {
-        await ctx.db.patch(i._id, { order: args.newOrder });
+        await ctx.db.patch("reportItems", i._id, { order: args.newOrder });
       } else if (oldOrder < args.newOrder) {
         // Moving down: shift items in between up
         if (i.order > oldOrder && i.order <= args.newOrder) {
-          await ctx.db.patch(i._id, { order: i.order - 1 });
+          await ctx.db.patch("reportItems", i._id, { order: i.order - 1 });
         }
       } else {
         // Moving up: shift items in between down
         if (i.order >= args.newOrder && i.order < oldOrder) {
-          await ctx.db.patch(i._id, { order: i.order + 1 });
+          await ctx.db.patch("reportItems", i._id, { order: i.order + 1 });
         }
       }
     }
@@ -139,7 +139,7 @@ export const remove = mutation({
     if (!validatePassword(args.password, "editor")) {
       throw new Error("Invalid password");
     }
-    await ctx.db.delete(args.itemId);
+    await ctx.db.delete("reportItems", args.itemId);
     return null;
   },
 });

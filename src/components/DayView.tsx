@@ -95,7 +95,9 @@ export function DayView({ date }: DayViewProps) {
         </p>
         {canEdit && (
           <button
-            onClick={handleCreateDay}
+            onClick={() => {
+              void handleCreateDay();
+            }}
             className={cn(
               "py-3 px-6 rounded-lg font-medium text-sm",
               "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
@@ -138,8 +140,12 @@ export function DayView({ date }: DayViewProps) {
             lesson={lesson}
             isFirst={index === 0}
             isLast={index === lessons.length - 1}
-            onMoveUp={() => handleMoveLesson(lesson._id, "up")}
-            onMoveDown={() => handleMoveLesson(lesson._id, "down")}
+            onMoveUp={() => {
+              void handleMoveLesson(lesson._id, "up");
+            }}
+            onMoveDown={() => {
+              void handleMoveLesson(lesson._id, "down");
+            }}
           />
         ))}
 
@@ -184,7 +190,7 @@ export function DayView({ date }: DayViewProps) {
                 )}
                 autoFocus
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCreateLesson();
+                  if (e.key === "Enter") void handleCreateLesson();
                   if (e.key === "Escape") setShowNewLesson(false);
                 }}
               />
@@ -197,7 +203,9 @@ export function DayView({ date }: DayViewProps) {
                 Cancel
               </button>
               <button
-                onClick={handleCreateLesson}
+                onClick={() => {
+                  void handleCreateLesson();
+                }}
                 disabled={!newLessonName.trim()}
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium",

@@ -82,7 +82,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    handleUpload(e.dataTransfer.files);
+    void handleUpload(e.dataTransfer.files);
   };
 
   return (
@@ -157,7 +157,9 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
           ref={fileInputRef}
           type="file"
           multiple
-          onChange={(e) => handleUpload(e.target.files)}
+          onChange={(e) => {
+            void handleUpload(e.target.files);
+          }}
           className="hidden"
           accept="image/*,.pdf,.doc,.docx,.txt,.md"
         />

@@ -39,7 +39,7 @@ export function ColorPicker({ selected, onSelect, onClose }: ColorPickerProps) {
           {TOPIC_COLOR_OPTIONS.map((option) => (
             <button
               key={option.name}
-              onClick={() => onSelect(option.name as TopicColor)}
+              onClick={() => onSelect(option.name)}
               className={cn(
                 "w-10 h-10 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center",
                 "active:scale-90 transition-transform",

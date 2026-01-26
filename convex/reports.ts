@@ -73,10 +73,10 @@ export const remove = mutation({
       .collect();
 
     for (const item of items) {
-      await ctx.db.delete(item._id);
+      await ctx.db.delete("reportItems", item._id);
     }
 
-    await ctx.db.delete(args.reportId);
+    await ctx.db.delete("reports", args.reportId);
     return null;
   },
 });

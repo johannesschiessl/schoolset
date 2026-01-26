@@ -55,49 +55,51 @@ function setReportViewInUrl(month: string | null) {
   window.history.pushState({}, "", url.toString());
 }
 
+function getInitialAuth(): { isAuthenticated: boolean; role: Role | null } {
+  const storedPassword = getStoredPassword();
+  const storedRole = getStoredRole();
+  if (storedPassword && storedRole) {
+    return { isAuthenticated: true, role: storedRole };
+  }
+  return { isAuthenticated: false, role: null };
+}
+
+function getInitialViewState(): {
+  currentView: ViewType;
+  selectedDate: string | null;
+  selectedMonth: string | null;
+} {
+  const view = getViewFromUrl();
+
+  if (view === "reports") {
+    const urlMonth = getMonthFromUrl();
+    const month =
+      urlMonth ||
+      `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+    return { currentView: view, selectedDate: null, selectedMonth: month };
+  } else {
+    const urlDate = getDateFromUrl();
+    const date = urlDate || new Date().toISOString().split("T")[0];
+    return { currentView: view, selectedDate: date, selectedMonth: null };
+  }
+}
+
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState<Role | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [{ isAuthenticated, role }, setAuth] = useState(getInitialAuth);
+  const [viewState, setViewState] = useState(getInitialViewState);
+  const { currentView, selectedDate, selectedMonth } = viewState;
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewType>("notes");
-  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
 
-  // Check for existing auth on mount
-  useEffect(() => {
-    const storedPassword = getStoredPassword();
-    const storedRole = getStoredRole();
-    if (storedPassword && storedRole) {
-      setIsAuthenticated(true);
-      setRole(storedRole);
-    }
-  }, []);
-
-  // Initialize view and selected date/month from URL
-  useEffect(() => {
-    const view = getViewFromUrl();
-    setCurrentView(view);
-
-    if (view === "reports") {
-      const urlMonth = getMonthFromUrl();
-      if (urlMonth) {
-        setSelectedMonth(urlMonth);
-      } else {
-        // Default to current month
-        const now = new Date();
-        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-        setSelectedMonth(currentMonth);
-      }
-    } else {
-      const urlDate = getDateFromUrl();
-      if (urlDate) {
-        setSelectedDate(urlDate);
-      } else {
-        const today = new Date().toISOString().split("T")[0];
-        setSelectedDate(today);
-      }
-    }
-  }, []);
+  const setIsAuthenticated = (value: boolean) =>
+    setAuth((prev) => ({ ...prev, isAuthenticated: value }));
+  const setRole = (value: Role | null) =>
+    setAuth((prev) => ({ ...prev, role: value }));
+  const setCurrentView = (value: ViewType) =>
+    setViewState((prev) => ({ ...prev, currentView: value }));
+  const setSelectedDate = (value: string | null) =>
+    setViewState((prev) => ({ ...prev, selectedDate: value }));
+  const setSelectedMonth = (value: string | null) =>
+    setViewState((prev) => ({ ...prev, selectedMonth: value }));
 
   // Close sidebar on window resize to desktop
   useEffect(() => {

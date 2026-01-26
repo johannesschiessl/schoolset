@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MarkdownTabs } from "./MarkdownTabs";
 import { cn } from "../lib/cn";
 import { XIcon } from "lucide-react";
@@ -26,24 +26,16 @@ export function ReportItemEditor({
   initialData,
   month,
 }: ReportItemEditorProps) {
-  const [date, setDate] = useState("");
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-
-  useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        setDate(initialData.date);
-        setSubject(initialData.subject);
-        setDescription(initialData.description);
-      } else {
-        // Default to first day of the month
-        setDate(`${month}-01`);
-        setSubject("");
-        setDescription("");
-      }
-    }
-  }, [isOpen, initialData, month]);
+  // Initialize state from props (component is remounted via key when modal opens)
+  const [date, setDate] = useState(() =>
+    initialData ? initialData.date : `${month}-01`,
+  );
+  const [subject, setSubject] = useState(() =>
+    initialData ? initialData.subject : "",
+  );
+  const [description, setDescription] = useState(() =>
+    initialData ? initialData.description : "",
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

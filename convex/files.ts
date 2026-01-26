@@ -65,10 +65,10 @@ export const deleteAttachment = mutation({
     if (!validatePassword(args.password, "editor")) {
       throw new Error("Invalid password");
     }
-    const attachment = await ctx.db.get(args.attachmentId);
+    const attachment = await ctx.db.get("attachments", args.attachmentId);
     if (attachment) {
       await ctx.storage.delete(attachment.storageId);
-      await ctx.db.delete(args.attachmentId);
+      await ctx.db.delete("attachments", args.attachmentId);
     }
     return null;
   },

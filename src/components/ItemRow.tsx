@@ -80,7 +80,8 @@ export function ItemRow({
               rows={4}
               autoFocus
               onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSave();
+                if (e.key === "Enter" && (e.metaKey || e.ctrlKey))
+                  void handleSave();
                 if (e.key === "Escape") {
                   setEditContent(item.content);
                   setIsEditing(false);
@@ -98,7 +99,9 @@ export function ItemRow({
                 Cancel
               </button>
               <button
-                onClick={handleSave}
+                onClick={() => {
+                  void handleSave();
+                }}
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium",
                   "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
@@ -169,7 +172,9 @@ export function ItemRow({
               <PencilIcon className="size-4" />
             </button>
             <button
-              onClick={handleDelete}
+              onClick={() => {
+                void handleDelete();
+              }}
               className={cn(
                 "p-1.5 rounded-lg",
                 "hover:bg-red-100 dark:hover:bg-red-900/30",

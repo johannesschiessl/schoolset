@@ -141,9 +141,11 @@ export function LessonCard({
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             onClick={(e) => e.stopPropagation()}
-            onBlur={handleSaveName}
+            onBlur={() => {
+              void handleSaveName();
+            }}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleSaveName();
+              if (e.key === "Enter") void handleSaveName();
               if (e.key === "Escape") {
                 setEditName(lesson.name);
                 setIsEditing(false);
@@ -225,7 +227,9 @@ export function LessonCard({
               <PencilIcon className="size-4" />
             </button>
             <button
-              onClick={handleDelete}
+              onClick={() => {
+                void handleDelete();
+              }}
               className={cn(
                 "p-1.5 rounded-lg",
                 "hover:bg-red-100 dark:hover:bg-red-900/30",
@@ -271,8 +275,12 @@ export function LessonCard({
                   item={item}
                   isFirst={index === 0}
                   isLast={index === items.length - 1}
-                  onMoveUp={() => handleMoveItem(item._id, "up")}
-                  onMoveDown={() => handleMoveItem(item._id, "down")}
+                  onMoveUp={() => {
+                    void handleMoveItem(item._id, "up");
+                  }}
+                  onMoveDown={() => {
+                    void handleMoveItem(item._id, "down");
+                  }}
                 />
               ))}
             </ul>
@@ -296,7 +304,7 @@ export function LessonCard({
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey))
-                    handleAddItem();
+                    void handleAddItem();
                   if (e.key === "Escape") setShowNewItem(false);
                 }}
               />
@@ -308,7 +316,9 @@ export function LessonCard({
                   Cancel
                 </button>
                 <button
-                  onClick={handleAddItem}
+                  onClick={() => {
+                    void handleAddItem();
+                  }}
                   disabled={!newItemContent.trim()}
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-medium",
@@ -343,7 +353,9 @@ export function LessonCard({
       {showIconPicker && (
         <IconPicker
           selected={lesson.icon as TopicIcon}
-          onSelect={handleIconSelect}
+          onSelect={(icon) => {
+            void handleIconSelect(icon);
+          }}
           onClose={() => setShowIconPicker(false)}
         />
       )}
@@ -351,7 +363,9 @@ export function LessonCard({
       {showColorPicker && (
         <ColorPicker
           selected={lesson.color as TopicColor}
-          onSelect={handleColorSelect}
+          onSelect={(color) => {
+            void handleColorSelect(color);
+          }}
           onClose={() => setShowColorPicker(false)}
         />
       )}

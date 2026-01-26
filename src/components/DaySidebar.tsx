@@ -90,7 +90,9 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
                   </span>
                   {canEdit && (
                     <button
-                      onClick={(e) => handleDeleteDay(day._id, e)}
+                      onClick={(e) => {
+                        void handleDeleteDay(day._id, e);
+                      }}
                       className={cn(
                         "p-1.5 rounded",
                         "hover:bg-red-100 dark:hover:bg-red-900/30",
@@ -111,7 +113,9 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
       {canEdit && (
         <div className="p-4 border-t border-neutral-200 dark:border-neutral-700">
           <button
-            onClick={handleCreateToday}
+            onClick={() => {
+              void handleCreateToday();
+            }}
             className={cn(
               "w-full py-3 md:py-2 px-4 rounded-lg font-medium text-sm",
               "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",

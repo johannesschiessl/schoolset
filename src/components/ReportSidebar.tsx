@@ -134,7 +134,9 @@ export function ReportSidebar({
                   </span>
                   {canEdit && (
                     <button
-                      onClick={(e) => handleDeleteReport(report._id, e)}
+                      onClick={(e) => {
+                        void handleDeleteReport(report._id, e);
+                      }}
                       className={cn(
                         "p-1.5 rounded",
                         "hover:bg-red-100 dark:hover:bg-red-900/30",
@@ -155,7 +157,9 @@ export function ReportSidebar({
       {canEdit && (
         <div className="p-4 border-t border-neutral-200 dark:border-neutral-700">
           <button
-            onClick={handleCreateCurrentMonth}
+            onClick={() => {
+              void handleCreateCurrentMonth();
+            }}
             className={cn(
               "w-full py-3 md:py-2 px-4 rounded-lg font-medium text-sm",
               "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",

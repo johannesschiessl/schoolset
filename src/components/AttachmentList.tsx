@@ -11,6 +11,19 @@ import {
 } from "lucide-react";
 import type { Id } from "../../convex/_generated/dataModel";
 
+const iconClassName =
+  "size-4 sm:size-5 text-neutral-500 dark:text-neutral-400";
+
+function AttachmentItemIcon({ contentType }: { contentType: string }) {
+  if (contentType.startsWith("image/")) {
+    return <ImageIcon className={iconClassName} />;
+  }
+  if (contentType === "application/pdf" || contentType.includes("text")) {
+    return <FileTextIcon className={iconClassName} />;
+  }
+  return <FileIcon className={iconClassName} />;
+}
+
 interface AttachmentListProps {
   itemId: Id<"items">;
 }
@@ -25,16 +38,6 @@ export function AttachmentList({ itemId }: AttachmentListProps) {
     return null;
   }
 
-  const getIcon = (contentType: string) => {
-    if (contentType.startsWith("image/")) {
-      return ImageIcon;
-    }
-    if (contentType === "application/pdf" || contentType.includes("text")) {
-      return FileTextIcon;
-    }
-    return FileIcon;
-  };
-
   const handleDelete = async (attachmentId: Id<"attachments">) => {
     if (confirm("Delete this attachment?")) {
       await deleteAttachment({ password, attachmentId });
@@ -48,9 +51,10 @@ export function AttachmentList({ itemId }: AttachmentListProps) {
           <AttachmentItem
             key={attachment._id}
             attachment={attachment}
-            onDelete={() => handleDelete(attachment._id)}
+            onDelete={() => {
+              void handleDelete(attachment._id);
+            }}
             canEdit={canEdit}
-            getIcon={getIcon}
           />
         ))}
       </div>
@@ -67,14 +71,12 @@ interface AttachmentItemProps {
   };
   onDelete: () => void;
   canEdit: boolean;
-  getIcon: (contentType: string) => typeof FileIcon;
 }
 
 function AttachmentItem({
   attachment,
   onDelete,
   canEdit,
-  getIcon,
 }: AttachmentItemProps) {
   const password = getStoredPassword() ?? "";
   const downloadUrl = useQuery(api.files.getDownloadUrl, {
@@ -82,7 +84,6 @@ function AttachmentItem({
     storageId: attachment.storageId,
   });
 
-  const Icon = getIcon(attachment.contentType);
   const isImage = attachment.contentType.startsWith("image/");
 
   return (
@@ -100,7 +101,7 @@ function AttachmentItem({
           className="w-6 h-6 sm:w-8 sm:h-8 object-cover rounded"
         />
       ) : (
-        <Icon className="size-4 sm:size-5 text-neutral-500 dark:text-neutral-400" />
+        <AttachmentItemIcon contentType={attachment.contentType} />
       )}
 
       <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 max-w-24 sm:max-w-32 truncate">

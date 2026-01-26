@@ -52,6 +52,7 @@ export function ReportView({ month }: ReportViewProps) {
   const removeItem = useMutation(api.reportItems.remove);
 
   const [editorOpen, setEditorOpen] = useState(false);
+  const [editorKey, setEditorKey] = useState(0);
   const [editingItem, setEditingItem] = useState<{
     _id: string;
     date: string;
@@ -68,6 +69,7 @@ export function ReportView({ month }: ReportViewProps) {
 
   const handleAddItem = () => {
     setEditingItem(null);
+    setEditorKey((k) => k + 1);
     setEditorOpen(true);
   };
 
@@ -78,6 +80,7 @@ export function ReportView({ month }: ReportViewProps) {
     description: string;
   }) => {
     setEditingItem(item);
+    setEditorKey((k) => k + 1);
     setEditorOpen(true);
   };
 
@@ -196,7 +199,9 @@ export function ReportView({ month }: ReportViewProps) {
           </p>
           {canEdit && (
             <button
-              onClick={handleCreateReport}
+              onClick={() => {
+                void handleCreateReport();
+              }}
               className={cn(
                 "px-4 py-2 rounded-lg font-medium text-sm",
                 "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
@@ -230,7 +235,9 @@ export function ReportView({ month }: ReportViewProps) {
         <div className="flex items-center gap-2">
           {items.length > 0 && (
             <button
-              onClick={handleExportPDF}
+              onClick={() => {
+                void handleExportPDF();
+              }}
               disabled={isExporting}
               className={cn(
                 "px-4 py-2 rounded-lg font-medium text-sm",
@@ -280,9 +287,15 @@ export function ReportView({ month }: ReportViewProps) {
               isFirst={index === 0}
               isLast={index === items.length - 1}
               onEdit={() => handleEditItem(item)}
-              onDelete={() => handleDeleteItem(item._id)}
-              onMoveUp={() => handleMoveItem(item._id, "up")}
-              onMoveDown={() => handleMoveItem(item._id, "down")}
+              onDelete={() => {
+                void handleDeleteItem(item._id);
+              }}
+              onMoveUp={() => {
+                void handleMoveItem(item._id, "up");
+              }}
+              onMoveDown={() => {
+                void handleMoveItem(item._id, "down");
+              }}
             />
           ))}
         </div>
@@ -290,9 +303,12 @@ export function ReportView({ month }: ReportViewProps) {
 
       {/* Editor modal */}
       <ReportItemEditor
+        key={editorKey}
         isOpen={editorOpen}
         onClose={() => setEditorOpen(false)}
-        onSave={handleSaveItem}
+        onSave={(data) => {
+          void handleSaveItem(data);
+        }}
         initialData={editingItem || undefined}
         month={month}
       />
