@@ -88,7 +88,10 @@ export function LessonCard({
     setShowNewItem(false);
   };
 
-  const handleMoveItem = async (itemId: Id<"items">, direction: "up" | "down") => {
+  const handleMoveItem = async (
+    itemId: Id<"items">,
+    direction: "up" | "down",
+  ) => {
     if (!items) return;
     const item = items.find((i) => i._id === itemId);
     if (!item) return;
@@ -114,7 +117,7 @@ export function LessonCard({
         className={cn(
           "flex items-center gap-2 sm:gap-3 p-3 sm:p-4 cursor-pointer",
           "hover:bg-neutral-50 dark:hover:bg-neutral-750",
-          "active:bg-neutral-100 dark:active:bg-neutral-700"
+          "active:bg-neutral-100 dark:active:bg-neutral-700",
         )}
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -149,7 +152,7 @@ export function LessonCard({
             className={cn(
               "flex-1 px-2 py-1 rounded border bg-white dark:bg-neutral-700",
               "text-neutral-900 dark:text-white text-sm sm:text-base",
-              "border-blue-500 focus:outline-none"
+              "border-blue-500 focus:outline-none",
             )}
             autoFocus
           />
@@ -160,14 +163,17 @@ export function LessonCard({
         )}
 
         {canEdit && (
-          <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex items-center gap-0.5"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setShowColorPicker(true)}
               className={cn(
                 "p-1.5 rounded-lg",
                 "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                 "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
-                "transition-colors"
+                "transition-colors",
               )}
               title="Change color"
             >
@@ -185,7 +191,7 @@ export function LessonCard({
                   "p-1.5 rounded-lg",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                   "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
-                  "transition-colors"
+                  "transition-colors",
                 )}
                 title="Move up"
               >
@@ -199,7 +205,7 @@ export function LessonCard({
                   "p-1.5 rounded-lg",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                   "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
-                  "transition-colors"
+                  "transition-colors",
                 )}
                 title="Move down"
               >
@@ -212,7 +218,7 @@ export function LessonCard({
                 "p-1.5 rounded-lg",
                 "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                 "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
-                "transition-colors"
+                "transition-colors",
               )}
               title="Edit name"
             >
@@ -224,7 +230,7 @@ export function LessonCard({
                 "p-1.5 rounded-lg",
                 "hover:bg-red-100 dark:hover:bg-red-900/30",
                 "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
-                "transition-colors"
+                "transition-colors",
               )}
               title="Delete lesson"
             >
@@ -284,12 +290,13 @@ export function LessonCard({
                   "text-neutral-900 dark:text-white placeholder-neutral-400",
                   "border-neutral-200 dark:border-neutral-600",
                   "focus:outline-none focus:ring-2 focus:ring-blue-500",
-                  "resize-none text-base sm:text-sm"
+                  "resize-none text-base sm:text-sm",
                 )}
                 rows={3}
                 autoFocus
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleAddItem();
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey))
+                    handleAddItem();
                   if (e.key === "Escape") setShowNewItem(false);
                 }}
               />
@@ -306,7 +313,7 @@ export function LessonCard({
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-medium",
                     "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
-                    "disabled:opacity-50 disabled:cursor-not-allowed"
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
                   )}
                 >
                   Add
@@ -323,7 +330,7 @@ export function LessonCard({
                 "text-neutral-400 hover:text-blue-500 active:text-blue-600",
                 "hover:bg-neutral-50 dark:hover:bg-neutral-750",
                 "flex items-center justify-center gap-2",
-                "transition-colors"
+                "transition-colors",
               )}
             >
               <PlusIcon className="size-4" />

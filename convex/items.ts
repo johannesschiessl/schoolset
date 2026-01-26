@@ -11,7 +11,7 @@ export const listByLesson = query({
       lessonId: v.id("lessons"),
       content: v.string(),
       order: v.number(),
-    })
+    }),
   ),
   handler: async (ctx, args) => {
     if (!validatePassword(args.password, "viewer")) {
@@ -43,7 +43,7 @@ export const create = mutation({
       .collect();
     const maxOrder = existingItems.reduce(
       (max, item) => Math.max(max, item.order),
-      -1
+      -1,
     );
 
     return await ctx.db.insert("items", {
@@ -96,9 +96,17 @@ export const reorder = mutation({
     for (const i of allItems) {
       if (i._id === args.itemId) {
         await ctx.db.patch(i._id, { order: newOrder });
-      } else if (oldOrder < newOrder && i.order > oldOrder && i.order <= newOrder) {
+      } else if (
+        oldOrder < newOrder &&
+        i.order > oldOrder &&
+        i.order <= newOrder
+      ) {
         await ctx.db.patch(i._id, { order: i.order - 1 });
-      } else if (oldOrder > newOrder && i.order >= newOrder && i.order < oldOrder) {
+      } else if (
+        oldOrder > newOrder &&
+        i.order >= newOrder &&
+        i.order < oldOrder
+      ) {
         await ctx.db.patch(i._id, { order: i.order + 1 });
       }
     }

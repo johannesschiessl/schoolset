@@ -15,7 +15,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
   const role = useQuery(
     api.auth.checkPassword,
-    isChecking ? { password } : "skip"
+    isChecking ? { password } : "skip",
   );
 
   // Handle role response
@@ -67,14 +67,12 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                   "text-base", // Prevent zoom on iOS
                   error
                     ? "border-red-500"
-                    : "border-neutral-200 dark:border-neutral-600"
+                    : "border-neutral-200 dark:border-neutral-600",
                 )}
                 autoFocus
                 autoComplete="current-password"
               />
-              {error && (
-                <p className="mt-2 text-sm text-red-500">{error}</p>
-              )}
+              {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             </div>
 
             <button
@@ -85,7 +83,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
                 "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
-                "transition-colors active:scale-[0.98]"
+                "transition-colors active:scale-[0.98]",
               )}
             >
               {isChecking ? "Checking..." : "Login"}

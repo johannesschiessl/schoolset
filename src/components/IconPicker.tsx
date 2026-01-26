@@ -19,7 +19,7 @@ export function IconPicker({ selected, onSelect, onClose }: IconPickerProps) {
         className={cn(
           "bg-white dark:bg-neutral-800 p-4 w-full shadow-xl",
           "sm:rounded-xl sm:max-w-md sm:mx-4",
-          "rounded-t-xl max-h-[80vh] overflow-y-auto"
+          "rounded-t-xl max-h-[80vh] overflow-y-auto",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -47,7 +47,7 @@ export function IconPicker({ selected, onSelect, onClose }: IconPickerProps) {
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                   "active:scale-95 transition-all",
                   selected === option.name &&
-                    "bg-blue-100 dark:bg-blue-900/30 ring-2 ring-blue-500"
+                    "bg-blue-100 dark:bg-blue-900/30 ring-2 ring-blue-500",
                 )}
               >
                 <Icon className="size-6 text-neutral-700 dark:text-neutral-300" />
@@ -62,7 +62,7 @@ export function IconPicker({ selected, onSelect, onClose }: IconPickerProps) {
           className={cn(
             "sm:hidden w-full mt-4 py-3 rounded-lg font-medium",
             "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
-            "active:bg-neutral-200 dark:active:bg-neutral-600"
+            "active:bg-neutral-200 dark:active:bg-neutral-600",
           )}
         >
           Close

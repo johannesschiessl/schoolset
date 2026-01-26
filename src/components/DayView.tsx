@@ -19,7 +19,7 @@ export function DayView({ date }: DayViewProps) {
   const day = useQuery(api.days.getByDate, { password, date });
   const lessons = useQuery(
     api.lessons.listByDay,
-    day ? { password, dayId: day._id } : "skip"
+    day ? { password, dayId: day._id } : "skip",
   );
   const createDay = useMutation(api.days.create);
   const createLesson = useMutation(api.lessons.create);
@@ -69,7 +69,10 @@ export function DayView({ date }: DayViewProps) {
     setShowNewLesson(false);
   };
 
-  const handleMoveLesson = async (lessonId: Id<"lessons">, direction: "up" | "down") => {
+  const handleMoveLesson = async (
+    lessonId: Id<"lessons">,
+    direction: "up" | "down",
+  ) => {
     if (!lessons) return;
     const lesson = lessons.find((l) => l._id === lessonId);
     if (!lesson) return;
@@ -97,7 +100,7 @@ export function DayView({ date }: DayViewProps) {
               "py-3 px-6 rounded-lg font-medium text-sm",
               "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
               "flex items-center gap-2",
-              "transition-colors active:scale-[0.98]"
+              "transition-colors active:scale-[0.98]",
             )}
           >
             <PlusIcon className="size-4" />
@@ -155,14 +158,12 @@ export function DayView({ date }: DayViewProps) {
                   onClick={() => setShowIconPicker(true)}
                   className="p-2 rounded-lg bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 hover:border-blue-500 transition-colors"
                 >
-                  <span className="text-lg">
-                    {newLessonIcon}
-                  </span>
+                  <span className="text-lg">{newLessonIcon}</span>
                 </button>
                 <button
                   onClick={() => setShowColorPicker(true)}
                   className={cn(
-                    "w-8 h-8 rounded-lg border border-neutral-200 dark:border-neutral-600 hover:border-blue-500 transition-colors"
+                    "w-8 h-8 rounded-lg border border-neutral-200 dark:border-neutral-600 hover:border-blue-500 transition-colors",
                   )}
                   style={{
                     backgroundColor: `var(--color-${newLessonColor}-500, #3b82f6)`,
@@ -179,7 +180,7 @@ export function DayView({ date }: DayViewProps) {
                   "text-neutral-900 dark:text-white placeholder-neutral-400",
                   "border-neutral-200 dark:border-neutral-600",
                   "focus:outline-none focus:ring-2 focus:ring-blue-500",
-                  "text-base sm:text-sm"
+                  "text-base sm:text-sm",
                 )}
                 autoFocus
                 onKeyDown={(e) => {
@@ -202,7 +203,7 @@ export function DayView({ date }: DayViewProps) {
                   "px-4 py-2 rounded-lg text-sm font-medium",
                   "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
                   "disabled:opacity-50 disabled:cursor-not-allowed",
-                  "transition-colors"
+                  "transition-colors",
                 )}
               >
                 Add Lesson
@@ -220,7 +221,7 @@ export function DayView({ date }: DayViewProps) {
               "text-neutral-500 dark:text-neutral-400",
               "hover:border-blue-500 hover:text-blue-500 active:bg-blue-50 dark:active:bg-blue-900/20",
               "flex items-center justify-center gap-2",
-              "transition-colors"
+              "transition-colors",
             )}
           >
             <PlusIcon className="size-4" />

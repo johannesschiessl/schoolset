@@ -9,7 +9,7 @@ export const list = query({
       _id: v.id("days"),
       _creationTime: v.number(),
       date: v.string(),
-    })
+    }),
   ),
   handler: async (ctx, args) => {
     if (!validatePassword(args.password, "viewer")) {
@@ -27,7 +27,7 @@ export const getByDate = query({
       _creationTime: v.number(),
       date: v.string(),
     }),
-    v.null()
+    v.null(),
   ),
   handler: async (ctx, args) => {
     if (!validatePassword(args.password, "viewer")) {

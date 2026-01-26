@@ -90,7 +90,7 @@ function AttachmentItem({
       className={cn(
         "group relative flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg",
         "bg-neutral-100 dark:bg-neutral-700",
-        "border border-neutral-200 dark:border-neutral-600"
+        "border border-neutral-200 dark:border-neutral-600",
       )}
     >
       {isImage && downloadUrl ? (
@@ -115,7 +115,7 @@ function AttachmentItem({
             className={cn(
               "p-1.5 rounded",
               "hover:bg-neutral-200 dark:hover:bg-neutral-600",
-              "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300",
             )}
             title="Download"
           >
@@ -131,7 +131,7 @@ function AttachmentItem({
               "sm:opacity-0 sm:group-hover:opacity-100",
               "hover:bg-red-100 dark:hover:bg-red-900/30",
               "text-neutral-500 hover:text-red-600",
-              "transition-opacity"
+              "transition-opacity",
             )}
             title="Delete"
           >

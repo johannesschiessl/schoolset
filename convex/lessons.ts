@@ -13,7 +13,7 @@ export const listByDay = query({
       icon: v.string(),
       color: v.string(),
       order: v.number(),
-    })
+    }),
   ),
   handler: async (ctx, args) => {
     if (!validatePassword(args.password, "viewer")) {
@@ -47,7 +47,7 @@ export const create = mutation({
       .collect();
     const maxOrder = existingLessons.reduce(
       (max, lesson) => Math.max(max, lesson.order),
-      -1
+      -1,
     );
 
     return await ctx.db.insert("lessons", {
@@ -109,9 +109,17 @@ export const reorder = mutation({
     for (const l of allLessons) {
       if (l._id === args.lessonId) {
         await ctx.db.patch(l._id, { order: newOrder });
-      } else if (oldOrder < newOrder && l.order > oldOrder && l.order <= newOrder) {
+      } else if (
+        oldOrder < newOrder &&
+        l.order > oldOrder &&
+        l.order <= newOrder
+      ) {
         await ctx.db.patch(l._id, { order: l.order - 1 });
-      } else if (oldOrder > newOrder && l.order >= newOrder && l.order < oldOrder) {
+      } else if (
+        oldOrder > newOrder &&
+        l.order >= newOrder &&
+        l.order < oldOrder
+      ) {
         await ctx.db.patch(l._id, { order: l.order + 1 });
       }
     }

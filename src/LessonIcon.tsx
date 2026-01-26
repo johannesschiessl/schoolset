@@ -18,7 +18,7 @@ export function LessonIcon({
   className,
 }: LessonIconProps) {
   const IconComponent = TOPIC_ICON_OPTIONS.find(
-    (option) => option.name === icon
+    (option) => option.name === icon,
   )?.icon;
 
   return (
@@ -30,7 +30,7 @@ export function LessonIcon({
         size === "xs" && "rounded-md p-1",
         size === "sm" && "rounded-full p-1.5",
         size === "default" && "rounded-xl p-1.5",
-        size === "xl" && "rounded-2xl p-2"
+        size === "xl" && "rounded-2xl p-2",
       )}
     >
       {IconComponent && (
@@ -38,7 +38,7 @@ export function LessonIcon({
           className={cn(
             TOPIC_COLOR_OPTIONS.find((option) => option.name === color)?.text,
             size === "xs" && "size-4",
-            size === "xl" && "size-12"
+            size === "xl" && "size-12",
           )}
         />
       )}

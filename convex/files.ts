@@ -45,7 +45,7 @@ export const listByItem = query({
       storageId: v.id("_storage"),
       filename: v.string(),
       contentType: v.string(),
-    })
+    }),
   ),
   handler: async (ctx, args) => {
     if (!validatePassword(args.password, "viewer")) {

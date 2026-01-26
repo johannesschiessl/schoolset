@@ -19,7 +19,7 @@ export function ColorPicker({ selected, onSelect, onClose }: ColorPickerProps) {
         className={cn(
           "bg-white dark:bg-neutral-800 p-4 w-full shadow-xl",
           "sm:rounded-xl sm:max-w-sm sm:mx-4",
-          "rounded-t-xl"
+          "rounded-t-xl",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -44,7 +44,8 @@ export function ColorPicker({ selected, onSelect, onClose }: ColorPickerProps) {
                 "w-10 h-10 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center",
                 "active:scale-90 transition-transform",
                 option.bg,
-                selected === option.name && "ring-2 ring-offset-2 ring-blue-500"
+                selected === option.name &&
+                  "ring-2 ring-offset-2 ring-blue-500",
               )}
             >
               {selected === option.name && (
@@ -60,7 +61,7 @@ export function ColorPicker({ selected, onSelect, onClose }: ColorPickerProps) {
           className={cn(
             "sm:hidden w-full mt-4 py-3 rounded-lg font-medium",
             "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
-            "active:bg-neutral-200 dark:active:bg-neutral-600"
+            "active:bg-neutral-200 dark:active:bg-neutral-600",
           )}
         >
           Close

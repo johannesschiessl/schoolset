@@ -66,7 +66,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
         setUploadProgress(null);
       }
     },
-    [password, itemId, generateUploadUrl, saveAttachment, onClose]
+    [password, itemId, generateUploadUrl, saveAttachment, onClose],
   );
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -94,7 +94,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
         className={cn(
           "bg-white dark:bg-neutral-800 p-4 sm:p-6 w-full shadow-xl",
           "sm:rounded-xl sm:max-w-md sm:mx-4",
-          "rounded-t-xl"
+          "rounded-t-xl",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -123,7 +123,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
             isDragging
               ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
               : "border-neutral-300 dark:border-neutral-600 hover:border-blue-400 active:border-blue-500",
-            uploading && "pointer-events-none opacity-50"
+            uploading && "pointer-events-none opacity-50",
           )}
         >
           {uploading ? (
@@ -140,7 +140,9 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                  <span className="hidden sm:inline">Drop files here or click to browse</span>
+                  <span className="hidden sm:inline">
+                    Drop files here or click to browse
+                  </span>
                   <span className="sm:hidden">Tap to select files</span>
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
@@ -168,7 +170,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
             "sm:hidden w-full mt-4 py-3 rounded-lg font-medium",
             "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
             "active:bg-neutral-200 dark:active:bg-neutral-600",
-            "disabled:opacity-50"
+            "disabled:opacity-50",
           )}
         >
           Cancel

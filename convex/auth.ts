@@ -5,7 +5,7 @@ export type Role = "viewer" | "editor";
 
 export function validatePassword(
   password: string,
-  requiredRole: Role
+  requiredRole: Role,
 ): boolean {
   const editorPassword = process.env.EDITOR_PASSWORD;
   const viewerPassword = process.env.VIEWER_PASSWORD;

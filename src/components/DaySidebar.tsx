@@ -82,7 +82,7 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
                     "transition-colors active:scale-[0.98]",
                     selectedDate === day.date
                       ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                      : "hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300"
+                      : "hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
                   )}
                 >
                   <span className="text-sm font-medium">
@@ -95,7 +95,7 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
                         "p-1.5 rounded",
                         "hover:bg-red-100 dark:hover:bg-red-900/30",
                         "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
-                        "transition-colors"
+                        "transition-colors",
                       )}
                     >
                       <TrashIcon className="size-4" />
@@ -116,7 +116,7 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
               "w-full py-3 md:py-2 px-4 rounded-lg font-medium text-sm",
               "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
               "flex items-center justify-center gap-2",
-              "transition-colors active:scale-[0.98]"
+              "transition-colors active:scale-[0.98]",
             )}
           >
             <PlusIcon className="size-4" />

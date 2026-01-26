@@ -75,7 +75,7 @@ export function ItemRow({
                 "w-full px-3 py-2 rounded-lg border bg-white dark:bg-neutral-700",
                 "text-neutral-900 dark:text-white text-base sm:text-sm",
                 "border-blue-500 focus:outline-none",
-                "resize-none"
+                "resize-none",
               )}
               rows={4}
               autoFocus
@@ -101,7 +101,7 @@ export function ItemRow({
                 onClick={handleSave}
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium",
-                  "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white"
+                  "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
                 )}
               >
                 Save
@@ -123,7 +123,7 @@ export function ItemRow({
                   "p-1.5 rounded-lg",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                   "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
-                  "transition-colors"
+                  "transition-colors",
                 )}
                 title="Move up"
               >
@@ -137,7 +137,7 @@ export function ItemRow({
                   "p-1.5 rounded-lg",
                   "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                   "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
-                  "transition-colors"
+                  "transition-colors",
                 )}
                 title="Move down"
               >
@@ -150,7 +150,7 @@ export function ItemRow({
                 "p-1.5 rounded-lg",
                 "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                 "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
-                "transition-colors"
+                "transition-colors",
               )}
               title="Add attachment"
             >
@@ -162,7 +162,7 @@ export function ItemRow({
                 "p-1.5 rounded-lg",
                 "hover:bg-neutral-100 dark:hover:bg-neutral-700",
                 "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
-                "transition-colors"
+                "transition-colors",
               )}
               title="Edit"
             >
@@ -174,7 +174,7 @@ export function ItemRow({
                 "p-1.5 rounded-lg",
                 "hover:bg-red-100 dark:hover:bg-red-900/30",
                 "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
-                "transition-colors"
+                "transition-colors",
               )}
               title="Delete"
             >
@@ -189,10 +189,7 @@ export function ItemRow({
 
       {/* File upload modal */}
       {showUpload && (
-        <FileUpload
-          itemId={item._id}
-          onClose={() => setShowUpload(false)}
-        />
+        <FileUpload itemId={item._id} onClose={() => setShowUpload(false)} />
       )}
     </li>
   );
