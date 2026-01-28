@@ -44,7 +44,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       <div className="w-full max-w-sm">
         <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 sm:p-8">
           <h1 className="text-xl sm:text-2xl font-bold text-center mb-2 text-neutral-900 dark:text-white">
-            Mitschreiben
+            Schoolset
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-center mb-6 text-sm">
             Enter your password to continue

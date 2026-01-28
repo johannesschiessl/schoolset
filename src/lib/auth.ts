@@ -1,7 +1,7 @@
 export type Role = "viewer" | "editor";
 
-const PASSWORD_KEY = "mitschreiben_password";
-const ROLE_KEY = "mitschreiben_role";
+const PASSWORD_KEY = "schoolset_password";
+const ROLE_KEY = "schoolset_role";
 
 export function getStoredPassword(): string | null {
   return sessionStorage.getItem(PASSWORD_KEY);

@@ -176,7 +176,7 @@ export default function App() {
             )}
           </button>
           <h1 className="font-bold text-lg text-neutral-900 dark:text-white">
-            Mitschreiben
+            Schoolset
           </h1>
           {/* View toggle */}
           <div className="hidden sm:flex items-center gap-1 ml-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
