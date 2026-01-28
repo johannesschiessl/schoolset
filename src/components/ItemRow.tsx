@@ -56,7 +56,7 @@ export function ItemRow({
   };
 
   const handleDelete = async () => {
-    if (confirm("Delete this item?")) {
+    if (confirm("Diesen Eintrag löschen?")) {
       await removeItem({ password, itemId: item._id });
     }
   };
@@ -95,7 +95,7 @@ export function ItemRow({
                 }}
                 className="px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 onClick={handleSave}
@@ -104,7 +104,7 @@ export function ItemRow({
                   "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
                 )}
               >
-                Save
+                Speichern
               </button>
             </div>
           </div>
@@ -125,7 +125,7 @@ export function ItemRow({
                   "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                   "transition-colors",
                 )}
-                title="Move up"
+                title="Nach oben"
               >
                 <ArrowUpIcon className="size-4" />
               </button>
@@ -139,7 +139,7 @@ export function ItemRow({
                   "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                   "transition-colors",
                 )}
-                title="Move down"
+                title="Nach unten"
               >
                 <ArrowDownIcon className="size-4" />
               </button>
@@ -152,7 +152,7 @@ export function ItemRow({
                 "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                 "transition-colors",
               )}
-              title="Add attachment"
+              title="Anhang hinzufügen"
             >
               <PaperclipIcon className="size-4" />
             </button>
@@ -164,7 +164,7 @@ export function ItemRow({
                 "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                 "transition-colors",
               )}
-              title="Edit"
+              title="Bearbeiten"
             >
               <PencilIcon className="size-4" />
             </button>
@@ -176,7 +176,7 @@ export function ItemRow({
                 "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
                 "transition-colors",
               )}
-              title="Delete"
+              title="Löschen"
             >
               <TrashIcon className="size-4" />
             </button>

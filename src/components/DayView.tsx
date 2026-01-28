@@ -91,7 +91,7 @@ export function DayView({ date }: DayViewProps) {
           <span className="sm:hidden">{formatShortDate(date)}</span>
         </h2>
         <p className="text-neutral-500 dark:text-neutral-400 mb-4 text-sm sm:text-base">
-          No entries for this day yet
+          Noch keine Einträge für diesen Tag
         </p>
         {canEdit && (
           <button
@@ -104,7 +104,7 @@ export function DayView({ date }: DayViewProps) {
             )}
           >
             <PlusIcon className="size-4" />
-            Create Day
+            Tag erstellen
           </button>
         )}
       </div>
@@ -145,7 +145,7 @@ export function DayView({ date }: DayViewProps) {
 
         {lessons.length === 0 && !showNewLesson && (
           <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
-            No lessons added yet
+            Noch keine Stunden hinzugefügt
           </div>
         )}
 
@@ -174,7 +174,7 @@ export function DayView({ date }: DayViewProps) {
                 type="text"
                 value={newLessonName}
                 onChange={(e) => setNewLessonName(e.target.value)}
-                placeholder="Lesson name (e.g., Mathematics)"
+                placeholder="Name der Stunde (z.B. Mathematik)"
                 className={cn(
                   "flex-1 px-4 py-3 sm:py-2 rounded-lg border bg-white dark:bg-neutral-700",
                   "text-neutral-900 dark:text-white placeholder-neutral-400",
@@ -194,7 +194,7 @@ export function DayView({ date }: DayViewProps) {
                 onClick={() => setShowNewLesson(false)}
                 className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 onClick={handleCreateLesson}
@@ -206,7 +206,7 @@ export function DayView({ date }: DayViewProps) {
                   "transition-colors",
                 )}
               >
-                Add Lesson
+                Stunde hinzufügen
               </button>
             </div>
           </div>
@@ -225,7 +225,7 @@ export function DayView({ date }: DayViewProps) {
             )}
           >
             <PlusIcon className="size-4" />
-            Add Lesson
+            Stunde hinzufügen
           </button>
         )}
       </div>

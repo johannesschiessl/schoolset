@@ -24,7 +24,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       storeAuth(password, role);
       onLogin(role);
     } else {
-      setError("Invalid password");
+      setError("Ungültiges Passwort");
       setIsChecking(false);
     }
   }
@@ -32,7 +32,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) {
-      setError("Please enter a password");
+      setError("Bitte Passwort eingeben");
       return;
     }
     setError(null);
@@ -47,7 +47,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             Schoolset
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-center mb-6 text-sm">
-            Enter your password to continue
+            Passwort eingeben, um fortzufahren
           </p>
 
           <form onSubmit={handleSubmit}>
@@ -59,7 +59,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                   setPassword(e.target.value);
                   setError(null);
                 }}
-                placeholder="Password"
+                placeholder="Passwort"
                 className={cn(
                   "w-full px-4 py-3 rounded-lg border bg-neutral-50 dark:bg-neutral-700",
                   "text-neutral-900 dark:text-white placeholder-neutral-400",
@@ -86,7 +86,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 "transition-colors active:scale-[0.98]",
               )}
             >
-              {isChecking ? "Checking..." : "Login"}
+              {isChecking ? "Wird geprüft..." : "Anmelden"}
             </button>
           </form>
         </div>

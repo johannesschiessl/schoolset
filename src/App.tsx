@@ -167,7 +167,7 @@ export default function App() {
               "text-neutral-600 dark:text-neutral-400",
               "transition-colors",
             )}
-            aria-label="Toggle menu"
+            aria-label="Menü umschalten"
           >
             {sidebarOpen ? (
               <XIcon className="size-5" />
@@ -206,7 +206,7 @@ export default function App() {
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-            {role === "editor" ? "Editor" : "Viewer"}
+            {role === "editor" ? "Bearbeiter" : "Betrachter"}
           </span>
           <button
             onClick={handleLogout}
@@ -216,7 +216,7 @@ export default function App() {
               "text-neutral-600 dark:text-neutral-400",
               "transition-colors",
             )}
-            title="Logout"
+            title="Abmelden"
           >
             <LogOutIcon className="size-5" />
           </button>

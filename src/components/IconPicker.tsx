@@ -25,7 +25,7 @@ export function IconPicker({ selected, onSelect, onClose }: IconPickerProps) {
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-neutral-900 dark:text-white">
-            Choose an icon
+            Symbol auswählen
           </h3>
           <button
             onClick={onClose}
@@ -65,7 +65,7 @@ export function IconPicker({ selected, onSelect, onClose }: IconPickerProps) {
             "active:bg-neutral-200 dark:active:bg-neutral-600",
           )}
         >
-          Close
+          Schließen
         </button>
       </div>
     </div>

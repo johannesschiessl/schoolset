@@ -29,7 +29,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
       try {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          setUploadProgress(`Uploading ${file.name}...`);
+          setUploadProgress(`${file.name} wird hochgeladen...`);
 
           // Get upload URL
           const uploadUrl = await generateUploadUrl({ password });
@@ -60,7 +60,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
         onClose();
       } catch (error) {
         console.error("Upload error:", error);
-        alert("Upload failed. Please try again.");
+        alert("Hochladen fehlgeschlagen. Bitte erneut versuchen.");
       } finally {
         setUploading(false);
         setUploadProgress(null);
@@ -100,7 +100,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-neutral-900 dark:text-white">
-            Upload Attachment
+            Anhang hochladen
           </h3>
           <button
             onClick={onClose}
@@ -141,12 +141,12 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
               <div className="text-center">
                 <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                   <span className="hidden sm:inline">
-                    Drop files here or click to browse
+                    Dateien hierher ziehen oder klicken zum Durchsuchen
                   </span>
-                  <span className="sm:hidden">Tap to select files</span>
+                  <span className="sm:hidden">Tippen zum Auswählen</span>
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                  Images, PDFs, and documents
+                  Bilder, PDFs und Dokumente
                 </p>
               </div>
             </>
@@ -173,7 +173,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
             "disabled:opacity-50",
           )}
         >
-          Cancel
+          Abbrechen
         </button>
       </div>
     </div>

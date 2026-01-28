@@ -36,7 +36,7 @@ export function AttachmentList({ itemId }: AttachmentListProps) {
   };
 
   const handleDelete = async (attachmentId: Id<"attachments">) => {
-    if (confirm("Delete this attachment?")) {
+    if (confirm("Diesen Anhang löschen?")) {
       await deleteAttachment({ password, attachmentId });
     }
   };
@@ -117,7 +117,7 @@ function AttachmentItem({
               "hover:bg-neutral-200 dark:hover:bg-neutral-600",
               "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300",
             )}
-            title="Download"
+            title="Herunterladen"
           >
             <DownloadIcon className="size-4" />
           </a>
@@ -133,7 +133,7 @@ function AttachmentItem({
               "text-neutral-500 hover:text-red-600",
               "transition-opacity",
             )}
-            title="Delete"
+            title="Löschen"
           >
             <TrashIcon className="size-4" />
           </button>

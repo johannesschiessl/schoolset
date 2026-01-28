@@ -25,7 +25,7 @@ export function ColorPicker({ selected, onSelect, onClose }: ColorPickerProps) {
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-neutral-900 dark:text-white">
-            Choose a color
+            Farbe auswählen
           </h3>
           <button
             onClick={onClose}
@@ -64,7 +64,7 @@ export function ColorPicker({ selected, onSelect, onClose }: ColorPickerProps) {
             "active:bg-neutral-200 dark:active:bg-neutral-600",
           )}
         >
-          Close
+          Schließen
         </button>
       </div>
     </div>

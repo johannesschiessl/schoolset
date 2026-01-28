@@ -24,7 +24,7 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
 
   const handleDeleteDay = async (dayId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm("Delete this day and all its lessons?")) {
+    if (confirm("Diesen Tag und alle Stunden löschen?")) {
       await removeDay({ password, dayId: dayId as any });
       if (days && days.length > 1) {
         const remaining = days.filter((d) => d._id !== dayId);
@@ -44,9 +44,9 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
     const diffTime = today.getTime() - dateOnly.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays === -1) return "Tomorrow";
+    if (diffDays === 0) return "Heute";
+    if (diffDays === 1) return "Gestern";
+    if (diffDays === -1) return "Morgen";
 
     return date.toLocaleDateString("de-DE", {
       weekday: "short",
@@ -60,16 +60,16 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
       <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
         <h2 className="font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
           <CalendarIcon className="size-5" />
-          Days
+          Tage
         </h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2">
         {days === undefined ? (
-          <div className="p-4 text-neutral-500 text-sm">Loading...</div>
+          <div className="p-4 text-neutral-500 text-sm">Laden...</div>
         ) : days.length === 0 ? (
           <div className="p-4 text-neutral-500 text-sm text-center">
-            No days yet
+            Noch keine Tage
           </div>
         ) : (
           <ul className="space-y-1">
@@ -120,7 +120,7 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
             )}
           >
             <PlusIcon className="size-4" />
-            Add Today
+            Heute hinzufügen
           </button>
         </div>
       )}

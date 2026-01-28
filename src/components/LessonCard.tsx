@@ -72,7 +72,7 @@ export function LessonCard({
   };
 
   const handleDelete = async () => {
-    if (confirm("Delete this lesson and all its items?")) {
+    if (confirm("Diese Stunde und alle Einträge löschen?")) {
       await removeLesson({ password, lessonId: lesson._id });
     }
   };
@@ -175,7 +175,7 @@ export function LessonCard({
                 "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                 "transition-colors",
               )}
-              title="Change color"
+              title="Farbe ändern"
             >
               <div
                 className="w-4 h-4 rounded-full"
@@ -193,7 +193,7 @@ export function LessonCard({
                   "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                   "transition-colors",
                 )}
-                title="Move up"
+                title="Nach oben"
               >
                 <ArrowUpIcon className="size-4" />
               </button>
@@ -207,7 +207,7 @@ export function LessonCard({
                   "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                   "transition-colors",
                 )}
-                title="Move down"
+                title="Nach unten"
               >
                 <ArrowDownIcon className="size-4" />
               </button>
@@ -220,7 +220,7 @@ export function LessonCard({
                 "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
                 "transition-colors",
               )}
-              title="Edit name"
+              title="Name bearbeiten"
             >
               <PencilIcon className="size-4" />
             </button>
@@ -232,7 +232,7 @@ export function LessonCard({
                 "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
                 "transition-colors",
               )}
-              title="Delete lesson"
+              title="Stunde löschen"
             >
               <TrashIcon className="size-4" />
             </button>
@@ -258,10 +258,10 @@ export function LessonCard({
       {isExpanded && (
         <div className="border-t border-neutral-100 dark:border-neutral-700">
           {items === undefined ? (
-            <div className="p-4 text-neutral-500 text-sm">Loading...</div>
+            <div className="p-4 text-neutral-500 text-sm">Laden...</div>
           ) : items.length === 0 && !showNewItem ? (
             <div className="p-4 text-center text-neutral-400 text-sm">
-              No items yet
+              Noch keine Einträge
             </div>
           ) : (
             <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
@@ -284,7 +284,7 @@ export function LessonCard({
               <textarea
                 value={newItemContent}
                 onChange={(e) => setNewItemContent(e.target.value)}
-                placeholder="What happened in this lesson?"
+                placeholder="Was ist in dieser Stunde passiert?"
                 className={cn(
                   "w-full px-3 py-2 rounded-lg border bg-neutral-50 dark:bg-neutral-700",
                   "text-neutral-900 dark:text-white placeholder-neutral-400",
@@ -305,7 +305,7 @@ export function LessonCard({
                   onClick={() => setShowNewItem(false)}
                   className="px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400"
                 >
-                  Cancel
+                  Abbrechen
                 </button>
                 <button
                   onClick={handleAddItem}
@@ -316,7 +316,7 @@ export function LessonCard({
                     "disabled:opacity-50 disabled:cursor-not-allowed",
                   )}
                 >
-                  Add
+                  Hinzufügen
                 </button>
               </div>
             </div>
@@ -334,7 +334,7 @@ export function LessonCard({
               )}
             >
               <PlusIcon className="size-4" />
-              Add item
+              Eintrag hinzufügen
             </button>
           )}
         </div>
