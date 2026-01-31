@@ -133,8 +133,11 @@ export function ReportView({ month }: ReportViewProps) {
 
     setIsExporting(true);
     try {
-      const canvas = await html2canvas(printRef.current, {
-        scale: 2,
+      const container = printRef.current;
+      const canvasScale = 2;
+
+      const canvas = await html2canvas(container, {
+        scale: canvasScale,
         useCORS: true,
         backgroundColor: "#ffffff",
       });
@@ -170,6 +173,37 @@ export function ReportView({ month }: ReportViewProps) {
         pdf.addImage(imgData, "PNG", 0, position, pdfWidth, scaledHeight);
         heightLeft -= pdfHeight;
       }
+
+      // Add clickable link annotations over the rasterized image
+      const links = container.querySelectorAll("a[data-link-url]");
+      const containerRect = container.getBoundingClientRect();
+
+      links.forEach((link) => {
+        const url = link.getAttribute("data-link-url");
+        if (!url) return;
+
+        const linkRect = link.getBoundingClientRect();
+
+        // Position relative to container, in canvas pixels (accounting for scale)
+        const relX = (linkRect.left - containerRect.left) * canvasScale;
+        const relY = (linkRect.top - containerRect.top) * canvasScale;
+        const relW = linkRect.width * canvasScale;
+        const relH = linkRect.height * canvasScale;
+
+        // Convert to PDF mm coordinates
+        const pdfX = relX * ratio;
+        const pdfY = relY * ratio;
+        const pdfW = relW * ratio;
+        const pdfH = relH * ratio;
+
+        // Determine which page this link falls on
+        const pageIndex = Math.floor(pdfY / pdfHeight);
+        const yOnPage = pdfY - pageIndex * pdfHeight;
+
+        // Set the correct page (1-indexed)
+        pdf.setPage(pageIndex + 1);
+        pdf.link(pdfX, yOnPage, pdfW, pdfH, { url });
+      });
 
       pdf.save(`taetigkeitsbericht-${month}.pdf`);
     } catch (error) {

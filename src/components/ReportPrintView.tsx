@@ -45,30 +45,30 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
           minHeight: "297mm",
           fontFamily: "system-ui, -apple-system, sans-serif",
           backgroundColor: "#ffffff",
-          color: "#000000",
-          padding: "32px",
+          color: "#1a1a1a",
+          padding: "40px 48px",
         }}
       >
         {/* Header */}
         <div
           style={{
             textAlign: "center",
-            marginBottom: "32px",
-            paddingBottom: "16px",
-            borderBottom: "2px solid #d4d4d4",
+            marginBottom: "36px",
+            paddingBottom: "20px",
+            borderBottom: "1px solid #d4d4d4",
           }}
         >
           <h1
             style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              marginBottom: "8px",
-              margin: "0 0 8px 0",
+              fontSize: "22px",
+              fontWeight: "600",
+              letterSpacing: "-0.01em",
+              margin: "0 0 6px 0",
             }}
           >
             Tätigkeitsbericht
           </h1>
-          <p style={{ fontSize: "18px", color: "#525252", margin: 0 }}>
+          <p style={{ fontSize: "16px", color: "#737373", margin: 0 }}>
             {monthLabel}
           </p>
         </div>
@@ -80,24 +80,31 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
               key={item._id}
               style={{
                 pageBreakInside: "avoid",
-                marginBottom: index < items.length - 1 ? "24px" : 0,
+                paddingBottom: index < items.length - 1 ? "20px" : 0,
+                marginBottom: index < items.length - 1 ? "20px" : 0,
+                borderBottom:
+                  index < items.length - 1
+                    ? "1px solid #e5e5e5"
+                    : "none",
               }}
             >
-              <div
-                style={{
-                  borderLeft: "4px solid #3b82f6",
-                  paddingLeft: "16px",
-                  marginBottom: "8px",
-                }}
-              >
-                <div style={{ fontSize: "14px", color: "#737373" }}>
+              <div style={{ marginBottom: "4px" }}>
+                <div
+                  style={{
+                    fontSize: "12px",
+                    color: "#999999",
+                    marginBottom: "2px",
+                    letterSpacing: "0.01em",
+                  }}
+                >
                   {formatDate(item.date)}
                 </div>
                 <h2
                   style={{
-                    fontSize: "18px",
+                    fontSize: "16px",
                     fontWeight: "600",
                     margin: 0,
+                    color: "#1a1a1a",
                   }}
                 >
                   {item.subject}
@@ -106,21 +113,21 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
               {item.description && (
                 <div
                   style={{
-                    paddingLeft: "16px",
                     fontSize: "14px",
                     lineHeight: "1.6",
+                    color: "#333333",
                   }}
                 >
                   <ReactMarkdown
                     components={{
                       p: ({ children }) => (
-                        <p style={{ margin: "8px 0" }}>{children}</p>
+                        <p style={{ margin: "6px 0" }}>{children}</p>
                       ),
                       ul: ({ children }) => (
                         <ul
                           style={{
-                            margin: "8px 0",
-                            paddingLeft: "24px",
+                            margin: "6px 0",
+                            paddingLeft: "20px",
                             listStyleType: "disc",
                           }}
                         >
@@ -130,8 +137,8 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
                       ol: ({ children }) => (
                         <ol
                           style={{
-                            margin: "8px 0",
-                            paddingLeft: "24px",
+                            margin: "6px 0",
+                            paddingLeft: "20px",
                             listStyleType: "decimal",
                           }}
                         >
@@ -139,18 +146,21 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
                         </ol>
                       ),
                       li: ({ children }) => (
-                        <li style={{ margin: "4px 0" }}>{children}</li>
+                        <li style={{ margin: "3px 0" }}>{children}</li>
                       ),
                       strong: ({ children }) => (
-                        <strong style={{ fontWeight: 600 }}>{children}</strong>
+                        <strong style={{ fontWeight: 600, color: "#1a1a1a" }}>
+                          {children}
+                        </strong>
                       ),
                       code: ({ children }) => (
                         <code
                           style={{
-                            backgroundColor: "#f3f4f6",
-                            padding: "2px 4px",
-                            borderRadius: "4px",
+                            backgroundColor: "#f5f5f5",
+                            padding: "1px 4px",
+                            borderRadius: "3px",
                             fontSize: "13px",
+                            color: "#333333",
                           }}
                         >
                           {children}
@@ -159,12 +169,30 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
                       a: ({ children, href }) => (
                         <a
                           href={href}
+                          data-link-url={href}
                           style={{
-                            color: "#2563eb",
+                            color: "#1a1a1a",
                             textDecoration: "underline",
+                            textDecorationColor: "#999999",
+                            textUnderlineOffset: "2px",
                           }}
                         >
                           {children}
+                          {/* Show URL if link text differs from href */}
+                          {href &&
+                            typeof children === "string" &&
+                            children !== href && (
+                              <span
+                                style={{
+                                  fontSize: "11px",
+                                  color: "#999999",
+                                  marginLeft: "2px",
+                                }}
+                              >
+                                {" "}
+                                ({href})
+                              </span>
+                            )}
                         </a>
                       ),
                     }}
@@ -180,11 +208,11 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
         {/* Footer */}
         <div
           style={{
-            marginTop: "32px",
+            marginTop: "36px",
             paddingTop: "16px",
             borderTop: "1px solid #e5e5e5",
-            fontSize: "14px",
-            color: "#737373",
+            fontSize: "12px",
+            color: "#999999",
             textAlign: "center",
           }}
         >
