@@ -39,4 +39,11 @@ export default defineSchema({
     description: v.string(), // markdown content
     order: v.number(),
   }).index("by_report", ["reportId"]),
+
+  reportAttachments: defineTable({
+    reportItemId: v.id("reportItems"),
+    storageId: v.id("_storage"),
+    filename: v.string(),
+    contentType: v.string(),
+  }).index("by_reportItem", ["reportItemId"]),
 });

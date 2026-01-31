@@ -133,6 +133,22 @@ export function ReportView({ month }: ReportViewProps) {
 
     setIsExporting(true);
     try {
+      // Wait for all images in the print view to load
+      const images = printRef.current.querySelectorAll("img");
+      await Promise.all(
+        Array.from(images).map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete) {
+                resolve();
+              } else {
+                img.onload = () => resolve();
+                img.onerror = () => resolve();
+              }
+            }),
+        ),
+      );
+
       const container = printRef.current;
       const canvasScale = 2;
 
@@ -184,23 +200,19 @@ export function ReportView({ month }: ReportViewProps) {
 
         const linkRect = link.getBoundingClientRect();
 
-        // Position relative to container, in canvas pixels (accounting for scale)
         const relX = (linkRect.left - containerRect.left) * canvasScale;
         const relY = (linkRect.top - containerRect.top) * canvasScale;
         const relW = linkRect.width * canvasScale;
         const relH = linkRect.height * canvasScale;
 
-        // Convert to PDF mm coordinates
         const pdfX = relX * ratio;
         const pdfY = relY * ratio;
         const pdfW = relW * ratio;
         const pdfH = relH * ratio;
 
-        // Determine which page this link falls on
         const pageIndex = Math.floor(pdfY / pdfHeight);
         const yOnPage = pdfY - pageIndex * pdfHeight;
 
-        // Set the correct page (1-indexed)
         pdf.setPage(pageIndex + 1);
         pdf.link(pdfX, yOnPage, pdfW, pdfH, { url });
       });

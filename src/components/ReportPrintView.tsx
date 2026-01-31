@@ -1,5 +1,9 @@
 import { forwardRef } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { getStoredPassword } from "../lib/auth";
 import ReactMarkdown from "react-markdown";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface ReportItem {
   _id: string;
@@ -78,6 +82,7 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
           {items.map((item, index) => (
             <div
               key={item._id}
+              data-report-item-id={item._id}
               style={{
                 pageBreakInside: "avoid",
                 paddingBottom: index < items.length - 1 ? "20px" : 0,
@@ -178,7 +183,6 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
                           }}
                         >
                           {children}
-                          {/* Show URL if link text differs from href */}
                           {href &&
                             typeof children === "string" &&
                             children !== href && (
@@ -201,6 +205,9 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
                   </ReactMarkdown>
                 </div>
               )}
+              <PrintItemAttachments
+                reportItemId={item._id as Id<"reportItems">}
+              />
             </div>
           ))}
         </div>
@@ -229,3 +236,84 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
 );
 
 ReportPrintView.displayName = "ReportPrintView";
+
+function PrintItemAttachments({
+  reportItemId,
+}: {
+  reportItemId: Id<"reportItems">;
+}) {
+  const password = getStoredPassword() ?? "";
+  const attachments = useQuery(api.reportFiles.listByReportItem, {
+    password,
+    reportItemId,
+  });
+
+  if (!attachments || attachments.length === 0) {
+    return null;
+  }
+
+  return (
+    <div style={{ marginTop: "10px" }}>
+      {attachments.map((att) => (
+        <PrintAttachment key={att._id} attachment={att} />
+      ))}
+    </div>
+  );
+}
+
+function PrintAttachment({
+  attachment,
+}: {
+  attachment: {
+    _id: Id<"reportAttachments">;
+    storageId: Id<"_storage">;
+    filename: string;
+    contentType: string;
+  };
+}) {
+  const password = getStoredPassword() ?? "";
+  const url = useQuery(api.files.getDownloadUrl, {
+    password,
+    storageId: attachment.storageId,
+  });
+
+  if (!url) return null;
+
+  const isImage = attachment.contentType.startsWith("image/");
+
+  if (isImage) {
+    return (
+      <div style={{ margin: "8px 0" }}>
+        <img
+          src={url}
+          alt={attachment.filename}
+          crossOrigin="anonymous"
+          style={{
+            maxWidth: "100%",
+            height: "auto",
+            borderRadius: "4px",
+            border: "1px solid #e5e5e5",
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ margin: "4px 0" }}>
+      <a
+        href={url}
+        data-link-url={url}
+        style={{
+          color: "#1a1a1a",
+          textDecoration: "underline",
+          textDecorationColor: "#999999",
+          textUnderlineOffset: "2px",
+          fontSize: "13px",
+        }}
+      >
+        {attachment.filename}
+      </a>
+    </div>
+  );
+}
