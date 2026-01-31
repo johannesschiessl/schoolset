@@ -132,26 +132,82 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
                         <ul
                           style={{
                             margin: "6px 0",
-                            paddingLeft: "20px",
-                            listStyleType: "disc",
+                            paddingLeft: "0",
+                            listStyleType: "none",
                           }}
                         >
                           {children}
                         </ul>
                       ),
-                      ol: ({ children }) => (
-                        <ol
+                      ol: ({ children, start }) => {
+                        let counter = (start ?? 1) - 1;
+                        const numbered = Array.isArray(children)
+                          ? children.map((child) => {
+                              if (
+                                child &&
+                                typeof child === "object" &&
+                                "type" in child &&
+                                child.type === "li"
+                              ) {
+                                counter++;
+                                return (
+                                  <li
+                                    key={counter}
+                                    style={{
+                                      margin: "3px 0",
+                                      display: "flex",
+                                      alignItems: "baseline",
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        minWidth: "20px",
+                                        flexShrink: 0,
+                                        color: "#333333",
+                                      }}
+                                    >
+                                      {counter}.
+                                    </span>
+                                    <span style={{ flex: 1 }}>
+                                      {child.props.children}
+                                    </span>
+                                  </li>
+                                );
+                              }
+                              return child;
+                            })
+                          : children;
+                        return (
+                          <ol
+                            style={{
+                              margin: "6px 0",
+                              paddingLeft: "0",
+                              listStyleType: "none",
+                            }}
+                          >
+                            {numbered}
+                          </ol>
+                        );
+                      },
+                      li: ({ children }) => (
+                        <li
                           style={{
-                            margin: "6px 0",
-                            paddingLeft: "20px",
-                            listStyleType: "decimal",
+                            margin: "3px 0",
+                            display: "flex",
+                            alignItems: "baseline",
                           }}
                         >
-                          {children}
-                        </ol>
-                      ),
-                      li: ({ children }) => (
-                        <li style={{ margin: "3px 0" }}>{children}</li>
+                          <span
+                            style={{
+                              minWidth: "20px",
+                              flexShrink: 0,
+                              lineHeight: "1.6",
+                            }}
+                          >
+                            •
+                          </span>
+                          <span style={{ flex: 1 }}>{children}</span>
+                        </li>
                       ),
                       strong: ({ children }) => (
                         <strong style={{ fontWeight: 600, color: "#1a1a1a" }}>
