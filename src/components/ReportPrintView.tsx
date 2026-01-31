@@ -279,7 +279,7 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
             textAlign: "center",
           }}
         >
-          Generiert am{" "}
+          Generiert mit schoolset am{" "}
           {new Date().toLocaleDateString("de-DE", {
             day: "numeric",
             month: "long",
