@@ -30,7 +30,8 @@ export const saveReportAttachment = mutation({
     }
 
     const report = await ctx.db.get(reportItem.reportId);
-    if (!report || report.userId !== args.userId) {
+    // TODO: revert to strict check after migration: report.userId !== args.userId
+    if (!report || (report.userId && report.userId !== args.userId)) {
       throw new Error("Report not found or not owned by user");
     }
 
@@ -65,7 +66,8 @@ export const listByReportItem = query({
     }
 
     const report = await ctx.db.get(reportItem.reportId);
-    if (!report || report.userId !== args.userId) {
+    // TODO: revert to strict check after migration: report.userId !== args.userId
+    if (!report || (report.userId && report.userId !== args.userId)) {
       throw new Error("Report not found or not owned by user");
     }
 
@@ -96,7 +98,8 @@ export const deleteReportAttachment = mutation({
     }
 
     const report = await ctx.db.get(reportItem.reportId);
-    if (!report || report.userId !== args.userId) {
+    // TODO: revert to strict check after migration: report.userId !== args.userId
+    if (!report || (report.userId && report.userId !== args.userId)) {
       throw new Error("Report not found or not owned by user");
     }
 

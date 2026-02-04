@@ -9,16 +9,22 @@ export const list = query({
       _id: v.id("reports"),
       _creationTime: v.number(),
       month: v.string(),
-      userId: v.id("users"),
+      userId: v.optional(v.id("users")), // TODO: revert to required after migration
     }),
   ),
   handler: async (ctx, args) => {
     await validateUserSession(ctx, args.userId, "none");
     // Filter by userId - users only see their own reports
-    return await ctx.db
+    // Also include reports without userId (pre-migration)
+    const userReports = await ctx.db
       .query("reports")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
+    const orphanReports = await ctx.db
+      .query("reports")
+      .filter((q) => q.eq(q.field("userId"), undefined))
+      .collect();
+    return [...userReports, ...orphanReports];
   },
 });
 
@@ -29,19 +35,27 @@ export const getByMonth = query({
       _id: v.id("reports"),
       _creationTime: v.number(),
       month: v.string(),
-      userId: v.id("users"),
+      userId: v.optional(v.id("users")), // TODO: revert to required after migration
     }),
     v.null(),
   ),
   handler: async (ctx, args) => {
     await validateUserSession(ctx, args.userId, "none");
-    // Filter by userId AND month
-    return await ctx.db
+    // Filter by userId AND month, also check orphan reports
+    const userReport = await ctx.db
       .query("reports")
       .withIndex("by_user_month", (q) =>
         q.eq("userId", args.userId).eq("month", args.month)
       )
       .first();
+    if (userReport) return userReport;
+    // Check for pre-migration orphan report with this month
+    const orphan = await ctx.db
+      .query("reports")
+      .withIndex("by_month", (q) => q.eq("month", args.month))
+      .filter((q) => q.eq(q.field("userId"), undefined))
+      .first();
+    return orphan ?? null;
   },
 });
 
@@ -72,7 +86,8 @@ export const remove = mutation({
 
     // Verify ownership before deletion
     const report = await ctx.db.get(args.reportId);
-    if (!report || report.userId !== args.userId) {
+    // TODO: revert to strict check after migration: report.userId !== args.userId
+    if (!report || (report.userId && report.userId !== args.userId)) {
       throw new Error("Report not found or not owned by user");
     }
 
