@@ -1,9 +1,9 @@
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
+import { FileTextIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { getUserId } from "../lib/auth";
 import { cn } from "../lib/cn";
-import { PlusIcon, FileTextIcon, TrashIcon } from "lucide-react";
-import type { Id } from "../../convex/_generated/dataModel";
 
 interface ReportSidebarProps {
   selectedMonth: string | null;
@@ -64,7 +64,10 @@ export function ReportSidebar({
     e.stopPropagation();
     if (!userId) return;
     if (confirm("Diesen Monat und alle Einträge löschen?")) {
-      await removeReport({ userId: userId as Id<"users">, reportId: reportId as Id<"reports"> });
+      await removeReport({
+        userId: userId as Id<"users">,
+        reportId: reportId as Id<"reports">,
+      });
       if (reports && reports.length > 1) {
         const remaining = reports.filter((r) => r._id !== reportId);
         if (remaining.length > 0) {
@@ -101,7 +104,7 @@ export function ReportSidebar({
                   : "text-neutral-600 dark:text-neutral-400",
               )}
             >
-              Notizen
+              Mitschreiben
             </button>
             <button
               onClick={onSwitchToReports}
@@ -133,7 +136,10 @@ export function ReportSidebar({
                   role="button"
                   tabIndex={0}
                   onClick={() => onSelectMonth(report.month)}
-                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelectMonth(report.month); }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ")
+                      onSelectMonth(report.month);
+                  }}
                   className={cn(
                     "w-full text-left px-3 py-3 md:py-2 rounded-lg flex items-center justify-between",
                     "transition-colors active:scale-[0.98] cursor-pointer",

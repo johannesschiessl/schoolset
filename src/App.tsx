@@ -1,16 +1,16 @@
-import { useState, useEffect, useCallback } from "react";
-import {
-  getStoredSession,
-  clearSession,
-  canViewItems,
-  type UserSession,
-} from "./lib/auth";
-import { LoginScreen } from "./components/LoginScreen";
+import { LogOutIcon, MenuIcon, XIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { DaySidebar } from "./components/DaySidebar";
 import { DayView } from "./components/DayView";
+import { LoginScreen } from "./components/LoginScreen";
 import { ReportSidebar } from "./components/ReportSidebar";
 import { ReportView } from "./components/ReportView";
-import { LogOutIcon, MenuIcon, XIcon } from "lucide-react";
+import {
+  canViewItems,
+  clearSession,
+  getStoredSession,
+  type UserSession,
+} from "./lib/auth";
 import { cn } from "./lib/cn";
 
 type ViewType = "notes" | "reports";
@@ -220,7 +220,7 @@ export default function App() {
                     : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
                 )}
               >
-                Notizen
+                Mitschreiben
               </button>
               <button
                 onClick={handleSwitchToReports}
