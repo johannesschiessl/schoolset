@@ -281,6 +281,9 @@ export default function App() {
             <DaySidebar
               selectedDate={selectedDate}
               onSelectDate={handleSelectDate}
+              onSwitchToNotes={handleSwitchToNotes}
+              onSwitchToReports={handleSwitchToReports}
+              currentView={currentView}
             />
           ) : (
             <ReportSidebar

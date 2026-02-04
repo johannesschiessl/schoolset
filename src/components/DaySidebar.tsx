@@ -8,9 +8,12 @@ import type { Id } from "../../convex/_generated/dataModel";
 interface DaySidebarProps {
   selectedDate: string | null;
   onSelectDate: (date: string) => void;
+  onSwitchToNotes: () => void;
+  onSwitchToReports: () => void;
+  currentView: "notes" | "reports";
 }
 
-export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
+export function DaySidebar({ selectedDate, onSelectDate, onSwitchToNotes, onSwitchToReports, currentView }: DaySidebarProps) {
   const userId = getUserId();
   const days = useQuery(
     api.days.list,
@@ -68,6 +71,34 @@ export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
           <CalendarIcon className="size-5" />
           Tage
         </h2>
+      </div>
+
+      {/* Mobile view toggle */}
+      <div className="sm:hidden p-2 border-b border-neutral-200 dark:border-neutral-700">
+        <div className="flex items-center gap-1 bg-neutral-200 dark:bg-neutral-700 rounded-lg p-1">
+          <button
+            onClick={onSwitchToNotes}
+            className={cn(
+              "flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+              currentView === "notes"
+                ? "bg-white dark:bg-neutral-600 text-neutral-900 dark:text-white shadow-sm"
+                : "text-neutral-600 dark:text-neutral-400",
+            )}
+          >
+            Mitschreiben
+          </button>
+          <button
+            onClick={onSwitchToReports}
+            className={cn(
+              "flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+              currentView === "reports"
+                ? "bg-white dark:bg-neutral-600 text-neutral-900 dark:text-white shadow-sm"
+                : "text-neutral-600 dark:text-neutral-400",
+            )}
+          >
+            Bericht
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2">
