@@ -20,8 +20,7 @@ export const listByReport = query({
 
     // Verify report ownership
     const report = await ctx.db.get(args.reportId);
-    // TODO: revert to strict check after migration: report.userId !== args.userId
-    if (!report || (report.userId && report.userId !== args.userId)) {
+    if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
 
@@ -48,8 +47,7 @@ export const create = mutation({
 
     // Verify report ownership
     const report = await ctx.db.get(args.reportId);
-    // TODO: revert to strict check after migration: report.userId !== args.userId
-    if (!report || (report.userId && report.userId !== args.userId)) {
+    if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
 
@@ -92,8 +90,7 @@ export const update = mutation({
     }
 
     const report = await ctx.db.get(item.reportId);
-    // TODO: revert to strict check after migration: report.userId !== args.userId
-    if (!report || (report.userId && report.userId !== args.userId)) {
+    if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
 
@@ -126,8 +123,7 @@ export const reorder = mutation({
 
     // Verify report ownership
     const report = await ctx.db.get(item.reportId);
-    // TODO: revert to strict check after migration: report.userId !== args.userId
-    if (!report || (report.userId && report.userId !== args.userId)) {
+    if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
 
@@ -174,8 +170,7 @@ export const remove = mutation({
     }
 
     const report = await ctx.db.get(item.reportId);
-    // TODO: revert to strict check after migration: report.userId !== args.userId
-    if (!report || (report.userId && report.userId !== args.userId)) {
+    if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
 

@@ -34,10 +34,9 @@ export default defineSchema({
   }).index("by_item", ["itemId"]),
 
   // Activity reports (Tätigkeitsbericht)
-  // TODO: revert userId to required after migration: v.id("users")
   reports: defineTable({
     month: v.string(), // "YYYY-MM" format
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
   }).index("by_month", ["month"])
     .index("by_user", ["userId"])
     .index("by_user_month", ["userId", "month"]),

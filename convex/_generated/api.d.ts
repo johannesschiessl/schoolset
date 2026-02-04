@@ -13,7 +13,6 @@ import type * as days from "../days.js";
 import type * as files from "../files.js";
 import type * as items from "../items.js";
 import type * as lessons from "../lessons.js";
-import type * as migrations from "../migrations.js";
 import type * as reportFiles from "../reportFiles.js";
 import type * as reportItems from "../reportItems.js";
 import type * as reports from "../reports.js";
@@ -30,7 +29,6 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   items: typeof items;
   lessons: typeof lessons;
-  migrations: typeof migrations;
   reportFiles: typeof reportFiles;
   reportItems: typeof reportItems;
   reports: typeof reports;
