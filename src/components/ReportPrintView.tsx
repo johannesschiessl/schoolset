@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword } from "../lib/auth";
+import { getUserId } from "../lib/auth";
 import ReactMarkdown from "react-markdown";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -298,11 +298,11 @@ function PrintItemAttachments({
 }: {
   reportItemId: Id<"reportItems">;
 }) {
-  const password = getStoredPassword() ?? "";
-  const attachments = useQuery(api.reportFiles.listByReportItem, {
-    password,
-    reportItemId,
-  });
+  const userId = getUserId();
+  const attachments = useQuery(
+    api.reportFiles.listByReportItem,
+    userId ? { userId: userId as Id<"users">, reportItemId } : "skip",
+  );
 
   if (!attachments || attachments.length === 0) {
     return null;
@@ -327,11 +327,11 @@ function PrintAttachment({
     contentType: string;
   };
 }) {
-  const password = getStoredPassword() ?? "";
-  const url = useQuery(api.files.getDownloadUrl, {
-    password,
-    storageId: attachment.storageId,
-  });
+  const userId = getUserId();
+  const url = useQuery(
+    api.files.getDownloadUrl,
+    userId ? { userId: userId as Id<"users">, storageId: attachment.storageId } : "skip",
+  );
 
   if (!url) return null;
 

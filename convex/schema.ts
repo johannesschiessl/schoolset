@@ -2,6 +2,12 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  users: defineTable({
+    username: v.string(),
+    passwordHash: v.string(),
+    permissions: v.union(v.literal("editor"), v.literal("viewer"), v.literal("none")),
+  }).index("by_username", ["username"]),
+
   days: defineTable({
     date: v.string(), // ISO date format "2024-01-20"
   }).index("by_date", ["date"]),
@@ -30,7 +36,10 @@ export default defineSchema({
   // Activity reports (Tätigkeitsbericht)
   reports: defineTable({
     month: v.string(), // "YYYY-MM" format
-  }).index("by_month", ["month"]),
+    userId: v.id("users"),
+  }).index("by_month", ["month"])
+    .index("by_user", ["userId"])
+    .index("by_user_month", ["userId", "month"]),
 
   reportItems: defineTable({
     reportId: v.id("reports"),

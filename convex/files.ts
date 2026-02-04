@@ -1,21 +1,19 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { validatePassword } from "./auth";
+import { validateUserSession } from "./auth";
 
 export const generateUploadUrl = mutation({
-  args: { password: v.string() },
+  args: { userId: v.id("users") },
   returns: v.string(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     return await ctx.storage.generateUploadUrl();
   },
 });
 
 export const saveAttachment = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     itemId: v.id("items"),
     storageId: v.id("_storage"),
     filename: v.string(),
@@ -23,9 +21,7 @@ export const saveAttachment = mutation({
   },
   returns: v.id("attachments"),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     return await ctx.db.insert("attachments", {
       itemId: args.itemId,
       storageId: args.storageId,
@@ -36,7 +32,7 @@ export const saveAttachment = mutation({
 });
 
 export const listByItem = query({
-  args: { password: v.string(), itemId: v.id("items") },
+  args: { userId: v.id("users"), itemId: v.id("items") },
   returns: v.array(
     v.object({
       _id: v.id("attachments"),
@@ -48,9 +44,7 @@ export const listByItem = query({
     }),
   ),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "viewer")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "viewer");
     return await ctx.db
       .query("attachments")
       .withIndex("by_item", (q) => q.eq("itemId", args.itemId))
@@ -59,12 +53,10 @@ export const listByItem = query({
 });
 
 export const deleteAttachment = mutation({
-  args: { password: v.string(), attachmentId: v.id("attachments") },
+  args: { userId: v.id("users"), attachmentId: v.id("attachments") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     const attachment = await ctx.db.get(args.attachmentId);
     if (attachment) {
       await ctx.storage.delete(attachment.storageId);
@@ -75,12 +67,10 @@ export const deleteAttachment = mutation({
 });
 
 export const getDownloadUrl = query({
-  args: { password: v.string(), storageId: v.id("_storage") },
+  args: { userId: v.id("users"), storageId: v.id("_storage") },
   returns: v.union(v.string(), v.null()),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "viewer")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "none");
     return await ctx.storage.getUrl(args.storageId);
   },
 });

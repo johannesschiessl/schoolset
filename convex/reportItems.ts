@@ -1,9 +1,9 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { validatePassword } from "./auth";
+import { validateUserSession } from "./auth";
 
 export const listByReport = query({
-  args: { password: v.string(), reportId: v.id("reports") },
+  args: { userId: v.id("users"), reportId: v.id("reports") },
   returns: v.array(
     v.object({
       _id: v.id("reportItems"),
@@ -16,9 +16,14 @@ export const listByReport = query({
     }),
   ),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "viewer")) {
-      throw new Error("Invalid password");
+    await validateUserSession(ctx, args.userId, "none");
+
+    // Verify report ownership
+    const report = await ctx.db.get(args.reportId);
+    if (!report || report.userId !== args.userId) {
+      throw new Error("Report not found or not owned by user");
     }
+
     const items = await ctx.db
       .query("reportItems")
       .withIndex("by_report", (q) => q.eq("reportId", args.reportId))
@@ -30,7 +35,7 @@ export const listByReport = query({
 
 export const create = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     reportId: v.id("reports"),
     date: v.string(),
     subject: v.string(),
@@ -38,9 +43,14 @@ export const create = mutation({
   },
   returns: v.id("reportItems"),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
+    await validateUserSession(ctx, args.userId, "none");
+
+    // Verify report ownership
+    const report = await ctx.db.get(args.reportId);
+    if (!report || report.userId !== args.userId) {
+      throw new Error("Report not found or not owned by user");
     }
+
     // Get max order for this report
     const existingItems = await ctx.db
       .query("reportItems")
@@ -63,7 +73,7 @@ export const create = mutation({
 
 export const update = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     itemId: v.id("reportItems"),
     date: v.optional(v.string()),
     subject: v.optional(v.string()),
@@ -71,9 +81,19 @@ export const update = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
+    await validateUserSession(ctx, args.userId, "none");
+
+    // Get the report item and verify ownership
+    const item = await ctx.db.get(args.itemId);
+    if (!item) {
+      throw new Error("Report item not found");
     }
+
+    const report = await ctx.db.get(item.reportId);
+    if (!report || report.userId !== args.userId) {
+      throw new Error("Report not found or not owned by user");
+    }
+
     const updates: Partial<{
       date: string;
       subject: string;
@@ -90,17 +110,22 @@ export const update = mutation({
 
 export const reorder = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     itemId: v.id("reportItems"),
     newOrder: v.number(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "none");
+
     const item = await ctx.db.get(args.itemId);
     if (!item) throw new Error("Item not found");
+
+    // Verify report ownership
+    const report = await ctx.db.get(item.reportId);
+    if (!report || report.userId !== args.userId) {
+      throw new Error("Report not found or not owned by user");
+    }
 
     const oldOrder = item.order;
     const reportId = item.reportId;
@@ -133,12 +158,33 @@ export const reorder = mutation({
 });
 
 export const remove = mutation({
-  args: { password: v.string(), itemId: v.id("reportItems") },
+  args: { userId: v.id("users"), itemId: v.id("reportItems") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
+    await validateUserSession(ctx, args.userId, "none");
+
+    // Get the report item and verify ownership
+    const item = await ctx.db.get(args.itemId);
+    if (!item) {
+      throw new Error("Report item not found");
     }
+
+    const report = await ctx.db.get(item.reportId);
+    if (!report || report.userId !== args.userId) {
+      throw new Error("Report not found or not owned by user");
+    }
+
+    // Delete attachments for this report item
+    const attachments = await ctx.db
+      .query("reportAttachments")
+      .withIndex("by_reportItem", (q) => q.eq("reportItemId", args.itemId))
+      .collect();
+
+    for (const attachment of attachments) {
+      await ctx.storage.delete(attachment.storageId);
+      await ctx.db.delete(attachment._id);
+    }
+
     await ctx.db.delete(args.itemId);
     return null;
   },

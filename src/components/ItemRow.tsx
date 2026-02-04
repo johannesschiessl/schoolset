@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword, isEditor } from "../lib/auth";
+import { getUserId, isEditor } from "../lib/auth";
 import { cn } from "../lib/cn";
 import {
   PencilIcon,
@@ -35,7 +35,7 @@ export function ItemRow({
   onMoveUp,
   onMoveDown,
 }: ItemRowProps) {
-  const password = getStoredPassword() ?? "";
+  const userId = getUserId();
   const updateItem = useMutation(api.items.update);
   const removeItem = useMutation(api.items.remove);
   const canEdit = isEditor();
@@ -45,9 +45,10 @@ export function ItemRow({
   const [showUpload, setShowUpload] = useState(false);
 
   const handleSave = async () => {
+    if (!userId) return;
     if (editContent.trim() && editContent !== item.content) {
       await updateItem({
-        password,
+        userId: userId as Id<"users">,
         itemId: item._id,
         content: editContent.trim(),
       });
@@ -56,8 +57,9 @@ export function ItemRow({
   };
 
   const handleDelete = async () => {
+    if (!userId) return;
     if (confirm("Diesen Eintrag löschen?")) {
-      await removeItem({ password, itemId: item._id });
+      await removeItem({ userId: userId as Id<"users">, itemId: item._id });
     }
   };
 

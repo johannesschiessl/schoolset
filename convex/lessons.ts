@@ -1,9 +1,9 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { validatePassword } from "./auth";
+import { validateUserSession } from "./auth";
 
 export const listByDay = query({
-  args: { password: v.string(), dayId: v.id("days") },
+  args: { userId: v.id("users"), dayId: v.id("days") },
   returns: v.array(
     v.object({
       _id: v.id("lessons"),
@@ -16,9 +16,7 @@ export const listByDay = query({
     }),
   ),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "viewer")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "viewer");
     const lessons = await ctx.db
       .query("lessons")
       .withIndex("by_day", (q) => q.eq("dayId", args.dayId))
@@ -29,7 +27,7 @@ export const listByDay = query({
 
 export const create = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     dayId: v.id("days"),
     name: v.string(),
     icon: v.string(),
@@ -37,9 +35,7 @@ export const create = mutation({
   },
   returns: v.id("lessons"),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     // Get max order for this day
     const existingLessons = await ctx.db
       .query("lessons")
@@ -62,7 +58,7 @@ export const create = mutation({
 
 export const update = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     lessonId: v.id("lessons"),
     name: v.optional(v.string()),
     icon: v.optional(v.string()),
@@ -70,9 +66,7 @@ export const update = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     const updates: Partial<{ name: string; icon: string; color: string }> = {};
     if (args.name !== undefined) updates.name = args.name;
     if (args.icon !== undefined) updates.icon = args.icon;
@@ -85,15 +79,13 @@ export const update = mutation({
 
 export const reorder = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     lessonId: v.id("lessons"),
     newOrder: v.number(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     const lesson = await ctx.db.get(args.lessonId);
     if (!lesson) throw new Error("Lesson not found");
 
@@ -128,12 +120,10 @@ export const reorder = mutation({
 });
 
 export const remove = mutation({
-  args: { password: v.string(), lessonId: v.id("lessons") },
+  args: { userId: v.id("users"), lessonId: v.id("lessons") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     // Delete all items and their attachments for this lesson
     const items = await ctx.db
       .query("items")

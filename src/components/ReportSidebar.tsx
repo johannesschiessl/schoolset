@@ -1,8 +1,9 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword, isEditor } from "../lib/auth";
+import { getUserId } from "../lib/auth";
 import { cn } from "../lib/cn";
 import { PlusIcon, FileTextIcon, TrashIcon } from "lucide-react";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface ReportSidebarProps {
   selectedMonth: string | null;
@@ -10,6 +11,7 @@ interface ReportSidebarProps {
   onSwitchToNotes: () => void;
   onSwitchToReports: () => void;
   currentView: "notes" | "reports";
+  canViewNotes?: boolean;
 }
 
 const GERMAN_MONTHS = [
@@ -39,24 +41,30 @@ export function ReportSidebar({
   onSwitchToNotes,
   onSwitchToReports,
   currentView,
+  canViewNotes = true,
 }: ReportSidebarProps) {
-  const password = getStoredPassword() ?? "";
-  const reports = useQuery(api.reports.list, { password });
+  const userId = getUserId();
+  const reports = useQuery(
+    api.reports.list,
+    userId ? { userId: userId as Id<"users"> } : "skip",
+  );
   const createReport = useMutation(api.reports.create);
   const removeReport = useMutation(api.reports.remove);
-  const canEdit = isEditor();
+  const canEdit = !!userId;
 
   const handleCreateCurrentMonth = async () => {
+    if (!userId) return;
     const now = new Date();
     const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-    await createReport({ password, month });
+    await createReport({ userId: userId as Id<"users">, month });
     onSelectMonth(month);
   };
 
   const handleDeleteReport = async (reportId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!userId) return;
     if (confirm("Diesen Monat und alle Einträge löschen?")) {
-      await removeReport({ password, reportId: reportId as any });
+      await removeReport({ userId: userId as Id<"users">, reportId: reportId as Id<"reports"> });
       if (reports && reports.length > 1) {
         const remaining = reports.filter((r) => r._id !== reportId);
         if (remaining.length > 0) {
@@ -80,33 +88,35 @@ export function ReportSidebar({
         </h2>
       </div>
 
-      {/* Mobile view toggle */}
-      <div className="sm:hidden p-2 border-b border-neutral-200 dark:border-neutral-700">
-        <div className="flex items-center gap-1 bg-neutral-200 dark:bg-neutral-700 rounded-lg p-1">
-          <button
-            onClick={onSwitchToNotes}
-            className={cn(
-              "flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-              currentView === "notes"
-                ? "bg-white dark:bg-neutral-600 text-neutral-900 dark:text-white shadow-sm"
-                : "text-neutral-600 dark:text-neutral-400",
-            )}
-          >
-            Notizen
-          </button>
-          <button
-            onClick={onSwitchToReports}
-            className={cn(
-              "flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-              currentView === "reports"
-                ? "bg-white dark:bg-neutral-600 text-neutral-900 dark:text-white shadow-sm"
-                : "text-neutral-600 dark:text-neutral-400",
-            )}
-          >
-            Bericht
-          </button>
+      {/* Mobile view toggle - only show if user can view notes */}
+      {canViewNotes && (
+        <div className="sm:hidden p-2 border-b border-neutral-200 dark:border-neutral-700">
+          <div className="flex items-center gap-1 bg-neutral-200 dark:bg-neutral-700 rounded-lg p-1">
+            <button
+              onClick={onSwitchToNotes}
+              className={cn(
+                "flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                currentView === "notes"
+                  ? "bg-white dark:bg-neutral-600 text-neutral-900 dark:text-white shadow-sm"
+                  : "text-neutral-600 dark:text-neutral-400",
+              )}
+            >
+              Notizen
+            </button>
+            <button
+              onClick={onSwitchToReports}
+              className={cn(
+                "flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                currentView === "reports"
+                  ? "bg-white dark:bg-neutral-600 text-neutral-900 dark:text-white shadow-sm"
+                  : "text-neutral-600 dark:text-neutral-400",
+              )}
+            >
+              Bericht
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex-1 overflow-y-auto p-2">
         {reports === undefined ? (
@@ -119,11 +129,14 @@ export function ReportSidebar({
           <ul className="space-y-1">
             {sortedReports.map((report) => (
               <li key={report._id}>
-                <button
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => onSelectMonth(report.month)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelectMonth(report.month); }}
                   className={cn(
                     "w-full text-left px-3 py-3 md:py-2 rounded-lg flex items-center justify-between",
-                    "transition-colors active:scale-[0.98]",
+                    "transition-colors active:scale-[0.98] cursor-pointer",
                     selectedMonth === report.month
                       ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
                       : "hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
@@ -145,7 +158,7 @@ export function ReportSidebar({
                       <TrashIcon className="size-4" />
                     </button>
                   )}
-                </button>
+                </div>
               </li>
             ))}
           </ul>

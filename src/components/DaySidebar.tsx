@@ -1,8 +1,9 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword, isEditor } from "../lib/auth";
+import { getUserId, isEditor } from "../lib/auth";
 import { cn } from "../lib/cn";
 import { PlusIcon, CalendarIcon, TrashIcon } from "lucide-react";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface DaySidebarProps {
   selectedDate: string | null;
@@ -10,22 +11,27 @@ interface DaySidebarProps {
 }
 
 export function DaySidebar({ selectedDate, onSelectDate }: DaySidebarProps) {
-  const password = getStoredPassword() ?? "";
-  const days = useQuery(api.days.list, { password });
+  const userId = getUserId();
+  const days = useQuery(
+    api.days.list,
+    userId ? { userId: userId as Id<"users"> } : "skip",
+  );
   const createDay = useMutation(api.days.create);
   const removeDay = useMutation(api.days.remove);
   const canEdit = isEditor();
 
   const handleCreateToday = async () => {
+    if (!userId) return;
     const today = new Date().toISOString().split("T")[0];
-    await createDay({ password, date: today });
+    await createDay({ userId: userId as Id<"users">, date: today });
     onSelectDate(today);
   };
 
   const handleDeleteDay = async (dayId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!userId) return;
     if (confirm("Diesen Tag und alle Stunden löschen?")) {
-      await removeDay({ password, dayId: dayId as any });
+      await removeDay({ userId: userId as Id<"users">, dayId: dayId as Id<"days"> });
       if (days && days.length > 1) {
         const remaining = days.filter((d) => d._id !== dayId);
         if (remaining.length > 0) {

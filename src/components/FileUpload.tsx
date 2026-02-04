@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword } from "../lib/auth";
+import { getUserId } from "../lib/auth";
 import { cn } from "../lib/cn";
 import { XIcon, UploadIcon, Loader2Icon } from "lucide-react";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -12,7 +12,7 @@ interface FileUploadProps {
 }
 
 export function FileUpload({ itemId, onClose }: FileUploadProps) {
-  const password = getStoredPassword() ?? "";
+  const userId = getUserId();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const saveAttachment = useMutation(api.files.saveAttachment);
 
@@ -23,7 +23,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
 
   const handleUpload = useCallback(
     async (files: FileList | null) => {
-      if (!files || files.length === 0) return;
+      if (!files || files.length === 0 || !userId) return;
 
       setUploading(true);
       try {
@@ -32,7 +32,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
           setUploadProgress(`${file.name} wird hochgeladen...`);
 
           // Get upload URL
-          const uploadUrl = await generateUploadUrl({ password });
+          const uploadUrl = await generateUploadUrl({ userId: userId as Id<"users"> });
 
           // Upload file
           const response = await fetch(uploadUrl, {
@@ -49,7 +49,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
 
           // Save attachment record
           await saveAttachment({
-            password,
+            userId: userId as Id<"users">,
             itemId,
             storageId,
             filename: file.name,
@@ -66,7 +66,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
         setUploadProgress(null);
       }
     },
-    [password, itemId, generateUploadUrl, saveAttachment, onClose],
+    [userId, itemId, generateUploadUrl, saveAttachment, onClose],
   );
 
   const handleDragOver = (e: React.DragEvent) => {

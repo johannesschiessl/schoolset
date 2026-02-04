@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword, isEditor } from "../lib/auth";
+import { getUserId } from "../lib/auth";
 import ReactMarkdown from "react-markdown";
 import { cn } from "../lib/cn";
 import {
@@ -62,7 +62,7 @@ export function ReportItemCard({
   onMoveUp,
   onMoveDown,
 }: ReportItemCardProps) {
-  const canEdit = isEditor();
+  const canEdit = true;
   const [uploadOpen, setUploadOpen] = useState(false);
 
   return (
@@ -195,23 +195,24 @@ function ReportAttachmentList({
 }: {
   reportItemId: Id<"reportItems">;
 }) {
-  const password = getStoredPassword() ?? "";
-  const attachments = useQuery(api.reportFiles.listByReportItem, {
-    password,
-    reportItemId,
-  });
+  const userId = getUserId();
+  const attachments = useQuery(
+    api.reportFiles.listByReportItem,
+    userId ? { userId: userId as Id<"users">, reportItemId } : "skip",
+  );
   const deleteAttachment = useMutation(
     api.reportFiles.deleteReportAttachment,
   );
-  const canEdit = isEditor();
+  const canEdit = !!userId;
 
   if (!attachments || attachments.length === 0) {
     return null;
   }
 
   const handleDelete = async (attachmentId: Id<"reportAttachments">) => {
+    if (!userId) return;
     if (confirm("Diesen Anhang löschen?")) {
-      await deleteAttachment({ password, attachmentId });
+      await deleteAttachment({ userId: userId as Id<"users">, attachmentId });
     }
   };
 
@@ -253,11 +254,11 @@ function ReportAttachmentItem({
   onDelete: () => void;
   canEdit: boolean;
 }) {
-  const password = getStoredPassword() ?? "";
-  const downloadUrl = useQuery(api.files.getDownloadUrl, {
-    password,
-    storageId: attachment.storageId,
-  });
+  const userId = getUserId();
+  const downloadUrl = useQuery(
+    api.files.getDownloadUrl,
+    userId ? { userId: userId as Id<"users">, storageId: attachment.storageId } : "skip",
+  );
 
   const isImage = attachment.contentType.startsWith("image/");
 

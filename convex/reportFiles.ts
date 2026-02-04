@@ -1,21 +1,19 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { validatePassword } from "./auth";
+import { validateUserSession } from "./auth";
 
 export const generateUploadUrl = mutation({
-  args: { password: v.string() },
+  args: { userId: v.id("users") },
   returns: v.string(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "none");
     return await ctx.storage.generateUploadUrl();
   },
 });
 
 export const saveReportAttachment = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     reportItemId: v.id("reportItems"),
     storageId: v.id("_storage"),
     filename: v.string(),
@@ -23,9 +21,19 @@ export const saveReportAttachment = mutation({
   },
   returns: v.id("reportAttachments"),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
+    await validateUserSession(ctx, args.userId, "none");
+
+    // Verify report ownership through report item
+    const reportItem = await ctx.db.get(args.reportItemId);
+    if (!reportItem) {
+      throw new Error("Report item not found");
     }
+
+    const report = await ctx.db.get(reportItem.reportId);
+    if (!report || report.userId !== args.userId) {
+      throw new Error("Report not found or not owned by user");
+    }
+
     return await ctx.db.insert("reportAttachments", {
       reportItemId: args.reportItemId,
       storageId: args.storageId,
@@ -36,7 +44,7 @@ export const saveReportAttachment = mutation({
 });
 
 export const listByReportItem = query({
-  args: { password: v.string(), reportItemId: v.id("reportItems") },
+  args: { userId: v.id("users"), reportItemId: v.id("reportItems") },
   returns: v.array(
     v.object({
       _id: v.id("reportAttachments"),
@@ -48,9 +56,19 @@ export const listByReportItem = query({
     }),
   ),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "viewer")) {
-      throw new Error("Invalid password");
+    await validateUserSession(ctx, args.userId, "none");
+
+    // Verify report ownership through report item
+    const reportItem = await ctx.db.get(args.reportItemId);
+    if (!reportItem) {
+      throw new Error("Report item not found");
     }
+
+    const report = await ctx.db.get(reportItem.reportId);
+    if (!report || report.userId !== args.userId) {
+      throw new Error("Report not found or not owned by user");
+    }
+
     return await ctx.db
       .query("reportAttachments")
       .withIndex("by_reportItem", (q) =>
@@ -61,17 +79,29 @@ export const listByReportItem = query({
 });
 
 export const deleteReportAttachment = mutation({
-  args: { password: v.string(), attachmentId: v.id("reportAttachments") },
+  args: { userId: v.id("users"), attachmentId: v.id("reportAttachments") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
+    await validateUserSession(ctx, args.userId, "none");
+
+    const attachment = await ctx.db.get(args.attachmentId);
+    if (!attachment) {
+      return null;
     }
-    const attachment = await ctx.db.get("reportAttachments", args.attachmentId);
-    if (attachment) {
-      await ctx.storage.delete(attachment.storageId);
-      await ctx.db.delete("reportAttachments", args.attachmentId);
+
+    // Verify report ownership through report item
+    const reportItem = await ctx.db.get(attachment.reportItemId);
+    if (!reportItem) {
+      throw new Error("Report item not found");
     }
+
+    const report = await ctx.db.get(reportItem.reportId);
+    if (!report || report.userId !== args.userId) {
+      throw new Error("Report not found or not owned by user");
+    }
+
+    await ctx.storage.delete(attachment.storageId);
+    await ctx.db.delete(args.attachmentId);
     return null;
   },
 });

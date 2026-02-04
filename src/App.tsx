@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  getStoredPassword,
-  getStoredRole,
-  clearAuth,
-  type Role,
+  getStoredSession,
+  clearSession,
+  canViewItems,
+  type UserSession,
 } from "./lib/auth";
 import { LoginScreen } from "./components/LoginScreen";
 import { DaySidebar } from "./components/DaySidebar";
@@ -55,27 +55,57 @@ function setReportViewInUrl(month: string | null) {
   window.history.pushState({}, "", url.toString());
 }
 
+function getPermissionLabel(permissions: string): string {
+  switch (permissions) {
+    case "editor":
+      return "Bearbeiter";
+    case "viewer":
+      return "Betrachter";
+    case "none":
+      return "Nur Berichte";
+    default:
+      return permissions;
+  }
+}
+
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState<Role | null>(null);
+  const [session, setSession] = useState<UserSession | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>("notes");
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
 
-  // Check for existing auth on mount
+  // Check for existing session on mount
   useEffect(() => {
-    const storedPassword = getStoredPassword();
-    const storedRole = getStoredRole();
-    if (storedPassword && storedRole) {
-      setIsAuthenticated(true);
-      setRole(storedRole);
+    const storedSession = getStoredSession();
+    if (storedSession) {
+      setSession(storedSession);
     }
   }, []);
 
   // Initialize view and selected date/month from URL
+  // Also handle permission-based view restrictions
   useEffect(() => {
+    if (!session) return;
+
+    const canSeeItems = canViewItems();
     const view = getViewFromUrl();
+
+    // If user has "none" permission, force reports view
+    if (!canSeeItems) {
+      setCurrentView("reports");
+      const urlMonth = getMonthFromUrl();
+      if (urlMonth) {
+        setSelectedMonth(urlMonth);
+      } else {
+        const now = new Date();
+        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        setSelectedMonth(currentMonth);
+        setReportViewInUrl(currentMonth);
+      }
+      return;
+    }
+
     setCurrentView(view);
 
     if (view === "reports") {
@@ -83,7 +113,6 @@ export default function App() {
       if (urlMonth) {
         setSelectedMonth(urlMonth);
       } else {
-        // Default to current month
         const now = new Date();
         const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
         setSelectedMonth(currentMonth);
@@ -97,7 +126,7 @@ export default function App() {
         setSelectedDate(today);
       }
     }
-  }, []);
+  }, [session]);
 
   // Close sidebar on window resize to desktop
   useEffect(() => {
@@ -113,16 +142,17 @@ export default function App() {
   const handleSelectDate = useCallback((date: string) => {
     setSelectedDate(date);
     setDateInUrl(date);
-    setSidebarOpen(false); // Close sidebar on mobile after selection
+    setSidebarOpen(false);
   }, []);
 
   const handleSelectMonth = useCallback((month: string) => {
     setSelectedMonth(month);
     setReportViewInUrl(month);
-    setSidebarOpen(false); // Close sidebar on mobile after selection
+    setSidebarOpen(false);
   }, []);
 
   const handleSwitchToNotes = useCallback(() => {
+    if (!canViewItems()) return;
     setCurrentView("notes");
     const date = selectedDate || new Date().toISOString().split("T")[0];
     setSelectedDate(date);
@@ -138,20 +168,20 @@ export default function App() {
     setReportViewInUrl(month);
   }, [selectedMonth]);
 
-  const handleLogin = (newRole: Role) => {
-    setIsAuthenticated(true);
-    setRole(newRole);
+  const handleLogin = (newSession: UserSession) => {
+    setSession(newSession);
   };
 
   const handleLogout = () => {
-    clearAuth();
-    setIsAuthenticated(false);
-    setRole(null);
+    clearSession();
+    setSession(null);
   };
 
-  if (!isAuthenticated) {
+  if (!session) {
     return <LoginScreen onLogin={handleLogin} />;
   }
+
+  const canSeeItems = canViewItems();
 
   return (
     <div className="h-screen flex flex-col bg-white dark:bg-neutral-900">
@@ -178,35 +208,37 @@ export default function App() {
           <h1 className="font-bold text-lg text-neutral-900 dark:text-white">
             Schoolset
           </h1>
-          {/* View toggle */}
-          <div className="hidden sm:flex items-center gap-1 ml-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
-            <button
-              onClick={handleSwitchToNotes}
-              className={cn(
-                "px-3 py-1 rounded-md text-sm font-medium transition-colors",
-                currentView === "notes"
-                  ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
-                  : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
-              )}
-            >
-              Notizen
-            </button>
-            <button
-              onClick={handleSwitchToReports}
-              className={cn(
-                "px-3 py-1 rounded-md text-sm font-medium transition-colors",
-                currentView === "reports"
-                  ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
-                  : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
-              )}
-            >
-              Bericht
-            </button>
-          </div>
+          {/* View toggle - only show if user can view items */}
+          {canSeeItems && (
+            <div className="hidden sm:flex items-center gap-1 ml-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
+              <button
+                onClick={handleSwitchToNotes}
+                className={cn(
+                  "px-3 py-1 rounded-md text-sm font-medium transition-colors",
+                  currentView === "notes"
+                    ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
+                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
+                )}
+              >
+                Notizen
+              </button>
+              <button
+                onClick={handleSwitchToReports}
+                className={cn(
+                  "px-3 py-1 rounded-md text-sm font-medium transition-colors",
+                  currentView === "reports"
+                    ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
+                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
+                )}
+              >
+                Bericht
+              </button>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-            {role === "editor" ? "Bearbeiter" : "Betrachter"}
+            {session.username} ({getPermissionLabel(session.permissions)})
           </span>
           <button
             onClick={handleLogout}
@@ -238,14 +270,14 @@ export default function App() {
           className={cn(
             "fixed md:static inset-y-0 left-0 z-40 md:z-auto",
             "transform transition-transform duration-200 ease-in-out md:transform-none",
-            "pt-14 md:pt-0", // Account for header on mobile
-            "bg-neutral-100 dark:bg-neutral-800 md:bg-transparent md:dark:bg-transparent", // Solid background on mobile
+            "pt-14 md:pt-0",
+            "bg-neutral-100 dark:bg-neutral-800 md:bg-transparent md:dark:bg-transparent",
             sidebarOpen
               ? "translate-x-0"
               : "-translate-x-full md:translate-x-0",
           )}
         >
-          {currentView === "notes" ? (
+          {currentView === "notes" && canSeeItems ? (
             <DaySidebar
               selectedDate={selectedDate}
               onSelectDate={handleSelectDate}
@@ -257,13 +289,14 @@ export default function App() {
               onSwitchToNotes={handleSwitchToNotes}
               onSwitchToReports={handleSwitchToReports}
               currentView={currentView}
+              canViewNotes={canSeeItems}
             />
           )}
         </div>
 
         {/* Main area */}
         <main className="flex-1 overflow-y-auto">
-          {currentView === "notes"
+          {currentView === "notes" && canSeeItems
             ? selectedDate && <DayView date={selectedDate} />
             : selectedMonth && <ReportView month={selectedMonth} />}
         </main>

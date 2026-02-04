@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword, isEditor } from "../lib/auth";
+import { getUserId, isEditor } from "../lib/auth";
 import { LessonIcon, type TopicIcon, type TopicColor } from "../LessonIcon";
 import { ItemRow } from "./ItemRow";
 import { IconPicker } from "./IconPicker";
@@ -41,11 +41,11 @@ export function LessonCard({
   onMoveUp,
   onMoveDown,
 }: LessonCardProps) {
-  const password = getStoredPassword() ?? "";
-  const items = useQuery(api.items.listByLesson, {
-    password,
-    lessonId: lesson._id,
-  });
+  const userId = getUserId();
+  const items = useQuery(
+    api.items.listByLesson,
+    userId ? { userId: userId as Id<"users">, lessonId: lesson._id } : "skip",
+  );
   const updateLesson = useMutation(api.lessons.update);
   const removeLesson = useMutation(api.lessons.remove);
   const createItem = useMutation(api.items.create);
@@ -61,9 +61,10 @@ export function LessonCard({
   const [showNewItem, setShowNewItem] = useState(false);
 
   const handleSaveName = async () => {
+    if (!userId) return;
     if (editName.trim() && editName !== lesson.name) {
       await updateLesson({
-        password,
+        userId: userId as Id<"users">,
         lessonId: lesson._id,
         name: editName.trim(),
       });
@@ -72,15 +73,16 @@ export function LessonCard({
   };
 
   const handleDelete = async () => {
+    if (!userId) return;
     if (confirm("Diese Stunde und alle Einträge löschen?")) {
-      await removeLesson({ password, lessonId: lesson._id });
+      await removeLesson({ userId: userId as Id<"users">, lessonId: lesson._id });
     }
   };
 
   const handleAddItem = async () => {
-    if (!newItemContent.trim()) return;
+    if (!newItemContent.trim() || !userId) return;
     await createItem({
-      password,
+      userId: userId as Id<"users">,
       lessonId: lesson._id,
       content: newItemContent.trim(),
     });
@@ -92,21 +94,23 @@ export function LessonCard({
     itemId: Id<"items">,
     direction: "up" | "down",
   ) => {
-    if (!items) return;
+    if (!items || !userId) return;
     const item = items.find((i) => i._id === itemId);
     if (!item) return;
     const newOrder = direction === "up" ? item.order - 1 : item.order + 1;
     if (newOrder < 0 || newOrder >= items.length) return;
-    await reorderItem({ password, itemId, newOrder });
+    await reorderItem({ userId: userId as Id<"users">, itemId, newOrder });
   };
 
   const handleIconSelect = async (icon: TopicIcon) => {
-    await updateLesson({ password, lessonId: lesson._id, icon });
+    if (!userId) return;
+    await updateLesson({ userId: userId as Id<"users">, lessonId: lesson._id, icon });
     setShowIconPicker(false);
   };
 
   const handleColorSelect = async (color: TopicColor) => {
-    await updateLesson({ password, lessonId: lesson._id, color });
+    if (!userId) return;
+    await updateLesson({ userId: userId as Id<"users">, lessonId: lesson._id, color });
     setShowColorPicker(false);
   };
 

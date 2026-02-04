@@ -1,36 +1,46 @@
 import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { storeAuth, type Role } from "../lib/auth";
+import { storeSession, type UserSession } from "../lib/auth";
 import { cn } from "../lib/cn";
 
 interface LoginScreenProps {
-  onLogin: (role: Role) => void;
+  onLogin: (session: UserSession) => void;
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
 
-  const role = useQuery(
-    api.auth.checkPassword,
-    isChecking ? { password } : "skip",
+  const loginResult = useQuery(
+    api.auth.login,
+    isChecking ? { username, password } : "skip",
   );
 
-  // Handle role response
-  if (isChecking && role !== undefined) {
-    if (role === "editor" || role === "viewer") {
-      storeAuth(password, role);
-      onLogin(role);
+  // Handle login response
+  if (isChecking && loginResult !== undefined) {
+    if (loginResult) {
+      const session: UserSession = {
+        userId: loginResult.userId,
+        username: loginResult.username,
+        permissions: loginResult.permissions,
+      };
+      storeSession(session);
+      onLogin(session);
     } else {
-      setError("Ungültiges Passwort");
+      setError("Ungültiger Benutzername oder Passwort");
       setIsChecking(false);
     }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!username.trim()) {
+      setError("Bitte Benutzername eingeben");
+      return;
+    }
     if (!password.trim()) {
       setError("Bitte Passwort eingeben");
       return;
@@ -47,10 +57,33 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             Schoolset
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-center mb-6 text-sm">
-            Passwort eingeben, um fortzufahren
+            Anmelden, um fortzufahren
           </p>
 
           <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setError(null);
+                }}
+                placeholder="Benutzername"
+                className={cn(
+                  "w-full px-4 py-3 rounded-lg border bg-neutral-50 dark:bg-neutral-700",
+                  "text-neutral-900 dark:text-white placeholder-neutral-400",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                  "text-base",
+                  error
+                    ? "border-red-500"
+                    : "border-neutral-200 dark:border-neutral-600",
+                )}
+                autoFocus
+                autoComplete="username"
+              />
+            </div>
+
             <div className="mb-4">
               <input
                 type="password"
@@ -64,12 +97,11 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                   "w-full px-4 py-3 rounded-lg border bg-neutral-50 dark:bg-neutral-700",
                   "text-neutral-900 dark:text-white placeholder-neutral-400",
                   "focus:outline-none focus:ring-2 focus:ring-blue-500",
-                  "text-base", // Prevent zoom on iOS
+                  "text-base",
                   error
                     ? "border-red-500"
                     : "border-neutral-200 dark:border-neutral-600",
                 )}
-                autoFocus
                 autoComplete="current-password"
               />
               {error && <p className="mt-2 text-sm text-red-500">{error}</p>}

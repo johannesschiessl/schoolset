@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword, isEditor } from "../lib/auth";
+import { getUserId, isEditor } from "../lib/auth";
 import { cn } from "../lib/cn";
 import {
   FileIcon,
@@ -16,8 +16,11 @@ interface AttachmentListProps {
 }
 
 export function AttachmentList({ itemId }: AttachmentListProps) {
-  const password = getStoredPassword() ?? "";
-  const attachments = useQuery(api.files.listByItem, { password, itemId });
+  const userId = getUserId();
+  const attachments = useQuery(
+    api.files.listByItem,
+    userId ? { userId: userId as Id<"users">, itemId } : "skip",
+  );
   const deleteAttachment = useMutation(api.files.deleteAttachment);
   const canEdit = isEditor();
 
@@ -36,8 +39,9 @@ export function AttachmentList({ itemId }: AttachmentListProps) {
   };
 
   const handleDelete = async (attachmentId: Id<"attachments">) => {
+    if (!userId) return;
     if (confirm("Diesen Anhang löschen?")) {
-      await deleteAttachment({ password, attachmentId });
+      await deleteAttachment({ userId: userId as Id<"users">, attachmentId });
     }
   };
 
@@ -76,11 +80,11 @@ function AttachmentItem({
   canEdit,
   getIcon,
 }: AttachmentItemProps) {
-  const password = getStoredPassword() ?? "";
-  const downloadUrl = useQuery(api.files.getDownloadUrl, {
-    password,
-    storageId: attachment.storageId,
-  });
+  const userId = getUserId();
+  const downloadUrl = useQuery(
+    api.files.getDownloadUrl,
+    userId ? { userId: userId as Id<"users">, storageId: attachment.storageId } : "skip",
+  );
 
   const Icon = getIcon(attachment.contentType);
   const isImage = attachment.contentType.startsWith("image/");

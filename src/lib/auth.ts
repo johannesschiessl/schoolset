@@ -1,30 +1,50 @@
-export type Role = "viewer" | "editor";
+export type Permission = "editor" | "viewer" | "none";
 
-const PASSWORD_KEY = "schoolset_password";
-const ROLE_KEY = "schoolset_role";
-
-export function getStoredPassword(): string | null {
-  return sessionStorage.getItem(PASSWORD_KEY);
+export interface UserSession {
+  userId: string;
+  username: string;
+  permissions: Permission;
 }
 
-export function getStoredRole(): Role | null {
-  const role = sessionStorage.getItem(ROLE_KEY);
-  if (role === "viewer" || role === "editor") {
-    return role;
+const SESSION_KEY = "schoolset_session";
+
+export function getStoredSession(): UserSession | null {
+  const stored = sessionStorage.getItem(SESSION_KEY);
+  if (!stored) return null;
+  try {
+    const parsed = JSON.parse(stored);
+    if (parsed && parsed.userId && parsed.username && parsed.permissions) {
+      return parsed as UserSession;
+    }
+    return null;
+  } catch {
+    return null;
   }
-  return null;
 }
 
-export function storeAuth(password: string, role: Role): void {
-  sessionStorage.setItem(PASSWORD_KEY, password);
-  sessionStorage.setItem(ROLE_KEY, role);
+export function storeSession(session: UserSession): void {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
-export function clearAuth(): void {
-  sessionStorage.removeItem(PASSWORD_KEY);
-  sessionStorage.removeItem(ROLE_KEY);
+export function clearSession(): void {
+  sessionStorage.removeItem(SESSION_KEY);
+}
+
+export function getUserId(): string | null {
+  const session = getStoredSession();
+  return session?.userId ?? null;
+}
+
+export function getPermissions(): Permission | null {
+  const session = getStoredSession();
+  return session?.permissions ?? null;
 }
 
 export function isEditor(): boolean {
-  return getStoredRole() === "editor";
+  return getPermissions() === "editor";
+}
+
+export function canViewItems(): boolean {
+  const permissions = getPermissions();
+  return permissions === "editor" || permissions === "viewer";
 }

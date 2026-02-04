@@ -1,9 +1,9 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { validatePassword } from "./auth";
+import { validateUserSession } from "./auth";
 
 export const listByLesson = query({
-  args: { password: v.string(), lessonId: v.id("lessons") },
+  args: { userId: v.id("users"), lessonId: v.id("lessons") },
   returns: v.array(
     v.object({
       _id: v.id("items"),
@@ -14,9 +14,7 @@ export const listByLesson = query({
     }),
   ),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "viewer")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "viewer");
     const items = await ctx.db
       .query("items")
       .withIndex("by_lesson", (q) => q.eq("lessonId", args.lessonId))
@@ -27,15 +25,13 @@ export const listByLesson = query({
 
 export const create = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     lessonId: v.id("lessons"),
     content: v.string(),
   },
   returns: v.id("items"),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     // Get max order for this lesson
     const existingItems = await ctx.db
       .query("items")
@@ -56,15 +52,13 @@ export const create = mutation({
 
 export const update = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     itemId: v.id("items"),
     content: v.string(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     await ctx.db.patch(args.itemId, { content: args.content });
     return null;
   },
@@ -72,15 +66,13 @@ export const update = mutation({
 
 export const reorder = mutation({
   args: {
-    password: v.string(),
+    userId: v.id("users"),
     itemId: v.id("items"),
     newOrder: v.number(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     const item = await ctx.db.get(args.itemId);
     if (!item) throw new Error("Item not found");
 
@@ -115,12 +107,10 @@ export const reorder = mutation({
 });
 
 export const remove = mutation({
-  args: { password: v.string(), itemId: v.id("items") },
+  args: { userId: v.id("users"), itemId: v.id("items") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     // Delete all attachments for this item
     const attachments = await ctx.db
       .query("attachments")

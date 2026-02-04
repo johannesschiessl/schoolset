@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword, isEditor } from "../lib/auth";
+import { getUserId, isEditor } from "../lib/auth";
 import { LessonCard } from "./LessonCard";
 import { cn } from "../lib/cn";
 import { PlusIcon, CalendarIcon } from "lucide-react";
@@ -15,11 +15,14 @@ interface DayViewProps {
 }
 
 export function DayView({ date }: DayViewProps) {
-  const password = getStoredPassword() ?? "";
-  const day = useQuery(api.days.getByDate, { password, date });
+  const userId = getUserId();
+  const day = useQuery(
+    api.days.getByDate,
+    userId ? { userId: userId as Id<"users">, date } : "skip",
+  );
   const lessons = useQuery(
     api.lessons.listByDay,
-    day ? { password, dayId: day._id } : "skip",
+    day && userId ? { userId: userId as Id<"users">, dayId: day._id } : "skip",
   );
   const createDay = useMutation(api.days.create);
   const createLesson = useMutation(api.lessons.create);
@@ -53,13 +56,14 @@ export function DayView({ date }: DayViewProps) {
   };
 
   const handleCreateDay = async () => {
-    await createDay({ password, date });
+    if (!userId) return;
+    await createDay({ userId: userId as Id<"users">, date });
   };
 
   const handleCreateLesson = async () => {
-    if (!day || !newLessonName.trim()) return;
+    if (!day || !newLessonName.trim() || !userId) return;
     await createLesson({
-      password,
+      userId: userId as Id<"users">,
       dayId: day._id,
       name: newLessonName.trim(),
       icon: newLessonIcon,
@@ -73,12 +77,12 @@ export function DayView({ date }: DayViewProps) {
     lessonId: Id<"lessons">,
     direction: "up" | "down",
   ) => {
-    if (!lessons) return;
+    if (!lessons || !userId) return;
     const lesson = lessons.find((l) => l._id === lessonId);
     if (!lesson) return;
     const newOrder = direction === "up" ? lesson.order - 1 : lesson.order + 1;
     if (newOrder < 0 || newOrder >= lessons.length) return;
-    await reorderLesson({ password, lessonId, newOrder });
+    await reorderLesson({ userId: userId as Id<"users">, lessonId, newOrder });
   };
 
   // Day doesn't exist yet

@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword, isEditor } from "../lib/auth";
+import { getUserId } from "../lib/auth";
 import { cn } from "../lib/cn";
 import { ReportItemCard } from "./ReportItemCard";
 import { ReportItemEditor } from "./ReportItemEditor";
@@ -9,6 +9,7 @@ import { ReportPrintView } from "./ReportPrintView";
 import { PlusIcon, DownloadIcon, FileTextIcon } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface ReportViewProps {
   month: string;
@@ -36,14 +37,17 @@ function formatMonth(monthStr: string): string {
 }
 
 export function ReportView({ month }: ReportViewProps) {
-  const password = getStoredPassword() ?? "";
-  const canEdit = isEditor();
+  const userId = getUserId();
+  const canEdit = !!userId;
 
-  const report = useQuery(api.reports.getByMonth, { password, month });
+  const report = useQuery(
+    api.reports.getByMonth,
+    userId ? { userId: userId as Id<"users">, month } : "skip",
+  );
   const createReport = useMutation(api.reports.create);
   const items = useQuery(
     api.reportItems.listByReport,
-    report ? { password, reportId: report._id } : "skip",
+    report && userId ? { userId: userId as Id<"users">, reportId: report._id } : "skip",
   );
 
   const createItem = useMutation(api.reportItems.create);
@@ -63,7 +67,8 @@ export function ReportView({ month }: ReportViewProps) {
   const printRef = useRef<HTMLDivElement>(null);
 
   const handleCreateReport = async () => {
-    await createReport({ password, month });
+    if (!userId) return;
+    await createReport({ userId: userId as Id<"users">, month });
   };
 
   const handleAddItem = () => {
@@ -86,19 +91,19 @@ export function ReportView({ month }: ReportViewProps) {
     subject: string;
     description: string;
   }) => {
-    if (!report) return;
+    if (!report || !userId) return;
 
     if (editingItem) {
       await updateItem({
-        password,
-        itemId: editingItem._id as any,
+        userId: userId as Id<"users">,
+        itemId: editingItem._id as Id<"reportItems">,
         date: data.date,
         subject: data.subject,
         description: data.description,
       });
     } else {
       await createItem({
-        password,
+        userId: userId as Id<"users">,
         reportId: report._id,
         date: data.date,
         subject: data.subject,
@@ -108,13 +113,14 @@ export function ReportView({ month }: ReportViewProps) {
   };
 
   const handleDeleteItem = async (itemId: string) => {
+    if (!userId) return;
     if (confirm("Diesen Eintrag löschen?")) {
-      await removeItem({ password, itemId: itemId as any });
+      await removeItem({ userId: userId as Id<"users">, itemId: itemId as Id<"reportItems"> });
     }
   };
 
   const handleMoveItem = async (itemId: string, direction: "up" | "down") => {
-    if (!items) return;
+    if (!items || !userId) return;
     const item = items.find((i) => i._id === itemId);
     if (!item) return;
 
@@ -124,7 +130,7 @@ export function ReportView({ month }: ReportViewProps) {
         : Math.min(items.length - 1, item.order + 1);
 
     if (newOrder !== item.order) {
-      await reorderItem({ password, itemId: itemId as any, newOrder });
+      await reorderItem({ userId: userId as Id<"users">, itemId: itemId as Id<"reportItems">, newOrder });
     }
   };
 

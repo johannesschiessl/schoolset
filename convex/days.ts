@@ -1,9 +1,9 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { validatePassword } from "./auth";
+import { validateUserSession } from "./auth";
 
 export const list = query({
-  args: { password: v.string() },
+  args: { userId: v.id("users") },
   returns: v.array(
     v.object({
       _id: v.id("days"),
@@ -12,15 +12,13 @@ export const list = query({
     }),
   ),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "viewer")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "viewer");
     return await ctx.db.query("days").withIndex("by_date").collect();
   },
 });
 
 export const getByDate = query({
-  args: { password: v.string(), date: v.string() },
+  args: { userId: v.id("users"), date: v.string() },
   returns: v.union(
     v.object({
       _id: v.id("days"),
@@ -30,9 +28,7 @@ export const getByDate = query({
     v.null(),
   ),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "viewer")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "viewer");
     return await ctx.db
       .query("days")
       .withIndex("by_date", (q) => q.eq("date", args.date))
@@ -41,12 +37,10 @@ export const getByDate = query({
 });
 
 export const create = mutation({
-  args: { password: v.string(), date: v.string() },
+  args: { userId: v.id("users"), date: v.string() },
   returns: v.id("days"),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     // Check if day already exists
     const existing = await ctx.db
       .query("days")
@@ -60,12 +54,10 @@ export const create = mutation({
 });
 
 export const remove = mutation({
-  args: { password: v.string(), dayId: v.id("days") },
+  args: { userId: v.id("users"), dayId: v.id("days") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!validatePassword(args.password, "editor")) {
-      throw new Error("Invalid password");
-    }
+    await validateUserSession(ctx, args.userId, "editor");
     // Delete all lessons and their items for this day
     const lessons = await ctx.db
       .query("lessons")

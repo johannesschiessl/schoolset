@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { getStoredPassword } from "../lib/auth";
+import { getUserId } from "../lib/auth";
 import { cn } from "../lib/cn";
 import { XIcon, UploadIcon, Loader2Icon } from "lucide-react";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -15,7 +15,7 @@ export function ReportFileUpload({
   reportItemId,
   onClose,
 }: ReportFileUploadProps) {
-  const password = getStoredPassword() ?? "";
+  const userId = getUserId();
   const generateUploadUrl = useMutation(
     api.reportFiles.generateUploadUrl,
   );
@@ -30,7 +30,7 @@ export function ReportFileUpload({
 
   const handleUpload = useCallback(
     async (files: FileList | null) => {
-      if (!files || files.length === 0) return;
+      if (!files || files.length === 0 || !userId) return;
 
       setUploading(true);
       try {
@@ -38,7 +38,7 @@ export function ReportFileUpload({
           const file = files[i];
           setUploadProgress(`${file.name} wird hochgeladen...`);
 
-          const uploadUrl = await generateUploadUrl({ password });
+          const uploadUrl = await generateUploadUrl({ userId: userId as Id<"users"> });
 
           const response = await fetch(uploadUrl, {
             method: "POST",
@@ -53,7 +53,7 @@ export function ReportFileUpload({
           const { storageId } = await response.json();
 
           await saveAttachment({
-            password,
+            userId: userId as Id<"users">,
             reportItemId,
             storageId,
             filename: file.name,
@@ -70,7 +70,7 @@ export function ReportFileUpload({
         setUploadProgress(null);
       }
     },
-    [password, reportItemId, generateUploadUrl, saveAttachment, onClose],
+    [userId, reportItemId, generateUploadUrl, saveAttachment, onClose],
   );
 
   const handleDragOver = (e: React.DragEvent) => {
