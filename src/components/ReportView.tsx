@@ -18,7 +18,7 @@ interface ReportViewProps {
 const GERMAN_MONTHS = [
   "Januar",
   "Februar",
-  "März",
+  "Marz",
   "April",
   "Mai",
   "Juni",
@@ -114,7 +114,7 @@ export function ReportView({ month }: ReportViewProps) {
 
   const handleDeleteItem = async (itemId: string) => {
     if (!userId) return;
-    if (confirm("Diesen Eintrag löschen?")) {
+    if (confirm("Diesen Eintrag loschen?")) {
       await removeItem({ userId: userId as Id<"users">, itemId: itemId as Id<"reportItems"> });
     }
   };
@@ -239,19 +239,20 @@ export function ReportView({ month }: ReportViewProps) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center">
-          <FileTextIcon className="size-16 mx-auto mb-4 text-neutral-300 dark:text-neutral-600" />
-          <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+          <FileTextIcon className="size-14 mx-auto mb-4 text-stone-200 dark:text-stone-700" />
+          <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-1.5">
             {monthLabel}
           </h2>
-          <p className="text-neutral-500 dark:text-neutral-400 mb-4">
-            Kein Bericht für diesen Monat vorhanden
+          <p className="text-stone-400 dark:text-stone-500 mb-5 text-sm">
+            Kein Bericht fur diesen Monat vorhanden
           </p>
           {canEdit && (
             <button
-              onClick={handleCreateReport}
+              onClick={() => void handleCreateReport()}
               className={cn(
-                "px-4 py-2 rounded-lg font-medium text-sm",
-                "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
+                "px-5 py-2.5 rounded-lg font-medium text-sm",
+                "bg-stone-900 hover:bg-stone-800 text-white",
+                "dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900",
                 "transition-colors",
               )}
             >
@@ -267,49 +268,51 @@ export function ReportView({ month }: ReportViewProps) {
   if (report === undefined || items === undefined) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-neutral-500 dark:text-neutral-400">Laden...</div>
+        <div className="text-stone-400 dark:text-stone-500 text-sm">Laden...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 p-4 md:p-6 lg:p-8">
+    <div className="flex-1 p-4 md:p-6 lg:p-8 max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+        <h2 className="text-lg sm:text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
           {monthLabel}
         </h2>
         <div className="flex items-center gap-2">
           {items.length > 0 && (
             <button
-              onClick={handleExportPDF}
+              onClick={() => void handleExportPDF()}
               disabled={isExporting}
               className={cn(
-                "px-4 py-2 rounded-lg font-medium text-sm",
-                "bg-neutral-100 dark:bg-neutral-800",
-                "hover:bg-neutral-200 dark:hover:bg-neutral-700",
-                "text-neutral-700 dark:text-neutral-300",
+                "px-3.5 py-2 rounded-lg font-medium text-[13px]",
+                "bg-white dark:bg-stone-800",
+                "border border-stone-200 dark:border-stone-700",
+                "hover:bg-stone-50 dark:hover:bg-stone-700",
+                "text-stone-600 dark:text-stone-300",
                 "flex items-center gap-2",
                 "transition-colors",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
               )}
             >
-              <DownloadIcon className="size-4" />
-              {isExporting ? "Exportiere..." : "PDF exportieren"}
+              <DownloadIcon className="size-3.5" />
+              {isExporting ? "Exportiere..." : "PDF"}
             </button>
           )}
           {canEdit && (
             <button
               onClick={handleAddItem}
               className={cn(
-                "px-4 py-2 rounded-lg font-medium text-sm",
-                "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
+                "px-3.5 py-2 rounded-lg font-medium text-[13px]",
+                "bg-stone-900 hover:bg-stone-800 text-white",
+                "dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900",
                 "flex items-center gap-2",
                 "transition-colors",
               )}
             >
-              <PlusIcon className="size-4" />
-              Eintrag hinzufügen
+              <PlusIcon className="size-3.5" />
+              Eintrag
             </button>
           )}
         </div>
@@ -318,13 +321,13 @@ export function ReportView({ month }: ReportViewProps) {
       {/* Items list */}
       {items.length === 0 ? (
         <div className="text-center py-12">
-          <FileTextIcon className="size-12 mx-auto mb-4 text-neutral-300 dark:text-neutral-600" />
-          <p className="text-neutral-500 dark:text-neutral-400">
-            Noch keine Einträge für diesen Monat
+          <FileTextIcon className="size-10 mx-auto mb-3 text-stone-200 dark:text-stone-700" />
+          <p className="text-stone-400 dark:text-stone-500 text-sm">
+            Noch keine Eintrage fur diesen Monat
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {items.map((item, index) => (
             <ReportItemCard
               key={item._id}
@@ -332,9 +335,9 @@ export function ReportView({ month }: ReportViewProps) {
               isFirst={index === 0}
               isLast={index === items.length - 1}
               onEdit={() => handleEditItem(item)}
-              onDelete={() => handleDeleteItem(item._id)}
-              onMoveUp={() => handleMoveItem(item._id, "up")}
-              onMoveDown={() => handleMoveItem(item._id, "down")}
+              onDelete={() => void handleDeleteItem(item._id)}
+              onMoveUp={() => void handleMoveItem(item._id, "up")}
+              onMoveDown={() => void handleMoveItem(item._id, "down")}
             />
           ))}
         </div>
@@ -344,7 +347,7 @@ export function ReportView({ month }: ReportViewProps) {
       <ReportItemEditor
         isOpen={editorOpen}
         onClose={() => setEditorOpen(false)}
-        onSave={handleSaveItem}
+        onSave={(data) => void handleSaveItem(data)}
         initialData={editingItem || undefined}
         month={month}
       />

@@ -69,64 +69,32 @@ function getPermissionLabel(permissions: string): string {
 }
 
 export default function App() {
-  const [session, setSession] = useState<UserSession | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [session, setSession] = useState<UserSession | null>(() => getStoredSession());
+  const [selectedDate, setSelectedDate] = useState<string | null>(() => {
+    if (!getStoredSession() || !canViewItems()) return null;
+    if (getViewFromUrl() === "reports") return null;
+    return getDateFromUrl() || new Date().toISOString().split("T")[0];
+  });
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewType>("notes");
-  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [currentView, setCurrentView] = useState<ViewType>(() => {
+    if (!getStoredSession()) return "notes";
+    if (!canViewItems()) return "reports";
+    return getViewFromUrl();
+  });
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(() => {
+    if (!getStoredSession()) return null;
+    const effectiveView = !canViewItems() ? "reports" : getViewFromUrl();
+    if (effectiveView !== "reports") return null;
+    return getMonthFromUrl() || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+  });
 
-  // Check for existing session on mount
+  // Sync URL for forced reports view on mount
   useEffect(() => {
-    const storedSession = getStoredSession();
-    if (storedSession) {
-      setSession(storedSession);
+    if (session && !canViewItems() && !getMonthFromUrl() && selectedMonth) {
+      setReportViewInUrl(selectedMonth);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Initialize view and selected date/month from URL
-  // Also handle permission-based view restrictions
-  useEffect(() => {
-    if (!session) return;
-
-    const canSeeItems = canViewItems();
-    const view = getViewFromUrl();
-
-    // If user has "none" permission, force reports view
-    if (!canSeeItems) {
-      setCurrentView("reports");
-      const urlMonth = getMonthFromUrl();
-      if (urlMonth) {
-        setSelectedMonth(urlMonth);
-      } else {
-        const now = new Date();
-        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-        setSelectedMonth(currentMonth);
-        setReportViewInUrl(currentMonth);
-      }
-      return;
-    }
-
-    setCurrentView(view);
-
-    if (view === "reports") {
-      const urlMonth = getMonthFromUrl();
-      if (urlMonth) {
-        setSelectedMonth(urlMonth);
-      } else {
-        const now = new Date();
-        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-        setSelectedMonth(currentMonth);
-      }
-    } else {
-      const urlDate = getDateFromUrl();
-      if (urlDate) {
-        setSelectedDate(urlDate);
-      } else {
-        const today = new Date().toISOString().split("T")[0];
-        setSelectedDate(today);
-      }
-    }
-  }, [session]);
 
   // Close sidebar on window resize to desktop
   useEffect(() => {
@@ -170,6 +138,23 @@ export default function App() {
 
   const handleLogin = (newSession: UserSession) => {
     setSession(newSession);
+    // Initialize view state for new login
+    const canSeeItems = canViewItems();
+    const view = getViewFromUrl();
+    if (!canSeeItems) {
+      setCurrentView("reports");
+      const urlMonth = getMonthFromUrl();
+      const month = urlMonth || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+      setSelectedMonth(month);
+      if (!urlMonth) setReportViewInUrl(month);
+    } else {
+      setCurrentView(view);
+      if (view === "reports") {
+        setSelectedMonth(getMonthFromUrl() || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`);
+      } else {
+        setSelectedDate(getDateFromUrl() || new Date().toISOString().split("T")[0]);
+      }
+    }
   };
 
   const handleLogout = () => {
@@ -184,20 +169,20 @@ export default function App() {
   const canSeeItems = canViewItems();
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-neutral-900">
+    <div className="h-screen flex flex-col bg-stone-50 dark:bg-stone-950">
       {/* Header */}
-      <header className="h-14 flex items-center justify-between px-4 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex-shrink-0 z-20">
+      <header className="h-14 flex items-center justify-between px-4 sm:px-5 border-b border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 flex-shrink-0 z-20">
         <div className="flex items-center gap-3">
           {/* Mobile menu button */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className={cn(
-              "p-2 rounded-lg md:hidden",
-              "hover:bg-neutral-100 dark:hover:bg-neutral-800",
-              "text-neutral-600 dark:text-neutral-400",
+              "p-2 -ml-2 rounded-lg md:hidden",
+              "hover:bg-stone-100 dark:hover:bg-stone-800",
+              "text-stone-500 dark:text-stone-400",
               "transition-colors",
             )}
-            aria-label="Menü umschalten"
+            aria-label="Menu umschalten"
           >
             {sidebarOpen ? (
               <XIcon className="size-5" />
@@ -205,19 +190,19 @@ export default function App() {
               <MenuIcon className="size-5" />
             )}
           </button>
-          <h1 className="font-bold text-lg text-neutral-900 dark:text-white">
+          <h1 className="font-semibold text-base tracking-tight text-stone-900 dark:text-stone-100">
             Schoolset
           </h1>
           {/* View toggle - only show if user can view items */}
           {canSeeItems && (
-            <div className="hidden sm:flex items-center gap-1 ml-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
+            <div className="hidden sm:flex items-center gap-0.5 ml-3 bg-stone-100 dark:bg-stone-800 rounded-lg p-0.5">
               <button
                 onClick={handleSwitchToNotes}
                 className={cn(
-                  "px-3 py-1 rounded-md text-sm font-medium transition-colors",
+                  "px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors",
                   currentView === "notes"
-                    ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
-                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
+                    ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-sm"
+                    : "text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200",
                 )}
               >
                 Mitschreiben
@@ -225,10 +210,10 @@ export default function App() {
               <button
                 onClick={handleSwitchToReports}
                 className={cn(
-                  "px-3 py-1 rounded-md text-sm font-medium transition-colors",
+                  "px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors",
                   currentView === "reports"
-                    ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
-                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white",
+                    ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-sm"
+                    : "text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200",
                 )}
               >
                 Bericht
@@ -236,21 +221,25 @@ export default function App() {
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-            {session.username} ({getPermissionLabel(session.permissions)})
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="text-xs text-stone-400 dark:text-stone-500">
+            {session.username}
+            <span className="hidden sm:inline">
+              {" "}
+              &middot; {getPermissionLabel(session.permissions)}
+            </span>
           </span>
           <button
             onClick={handleLogout}
             className={cn(
               "p-2 rounded-lg",
-              "hover:bg-neutral-100 dark:hover:bg-neutral-800",
-              "text-neutral-600 dark:text-neutral-400",
+              "hover:bg-stone-100 dark:hover:bg-stone-800",
+              "text-stone-400 dark:text-stone-500",
               "transition-colors",
             )}
             title="Abmelden"
           >
-            <LogOutIcon className="size-5" />
+            <LogOutIcon className="size-4" />
           </button>
         </div>
       </header>
@@ -260,7 +249,7 @@ export default function App() {
         {/* Mobile overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-30 md:hidden"
+            className="fixed inset-0 bg-black/40 z-30 md:hidden backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -271,7 +260,7 @@ export default function App() {
             "fixed md:static inset-y-0 left-0 z-40 md:z-auto",
             "transform transition-transform duration-200 ease-in-out md:transform-none",
             "pt-14 md:pt-0",
-            "bg-neutral-100 dark:bg-neutral-800 md:bg-transparent md:dark:bg-transparent",
+            "bg-white dark:bg-stone-900 md:bg-transparent md:dark:bg-transparent",
             sidebarOpen
               ? "translate-x-0"
               : "-translate-x-full md:translate-x-0",

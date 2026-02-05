@@ -38,6 +38,8 @@ export function LessonIcon({
           className={cn(
             TOPIC_COLOR_OPTIONS.find((option) => option.name === color)?.text,
             size === "xs" && "size-4",
+            size === "sm" && "size-4",
+            size === "default" && "size-5",
             size === "xl" && "size-12",
           )}
         />

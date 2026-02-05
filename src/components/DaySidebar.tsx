@@ -33,7 +33,7 @@ export function DaySidebar({ selectedDate, onSelectDate, onSwitchToNotes, onSwit
   const handleDeleteDay = async (dayId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!userId) return;
-    if (confirm("Diesen Tag und alle Stunden löschen?")) {
+    if (confirm("Diesen Tag und alle Stunden loschen?")) {
       await removeDay({ userId: userId as Id<"users">, dayId: dayId as Id<"days"> });
       if (days && days.length > 1) {
         const remaining = days.filter((d) => d._id !== dayId);
@@ -65,24 +65,24 @@ export function DaySidebar({ selectedDate, onSelectDate, onSwitchToNotes, onSwit
   };
 
   return (
-    <aside className="w-72 md:w-64 bg-neutral-100 dark:bg-neutral-800 md:dark:bg-neutral-800/50 border-r border-neutral-200 dark:border-neutral-700 h-full flex flex-col">
-      <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
-        <h2 className="font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
-          <CalendarIcon className="size-5" />
+    <aside className="w-72 md:w-60 bg-white dark:bg-stone-900 md:bg-stone-50/50 md:dark:bg-stone-900/50 border-r border-stone-200 dark:border-stone-800 h-full flex flex-col">
+      <div className="px-4 py-3.5 border-b border-stone-100 dark:border-stone-800">
+        <h2 className="font-medium text-sm text-stone-500 dark:text-stone-400 flex items-center gap-2 uppercase tracking-wide">
+          <CalendarIcon className="size-4" />
           Tage
         </h2>
       </div>
 
       {/* Mobile view toggle */}
-      <div className="sm:hidden p-2 border-b border-neutral-200 dark:border-neutral-700">
-        <div className="flex items-center gap-1 bg-neutral-200 dark:bg-neutral-700 rounded-lg p-1">
+      <div className="sm:hidden p-2 border-b border-stone-100 dark:border-stone-800">
+        <div className="flex items-center gap-0.5 bg-stone-100 dark:bg-stone-800 rounded-lg p-0.5">
           <button
             onClick={onSwitchToNotes}
             className={cn(
               "flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors",
               currentView === "notes"
-                ? "bg-white dark:bg-neutral-600 text-neutral-900 dark:text-white shadow-sm"
-                : "text-neutral-600 dark:text-neutral-400",
+                ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-sm"
+                : "text-stone-500 dark:text-stone-400",
             )}
           >
             Mitschreiben
@@ -92,8 +92,8 @@ export function DaySidebar({ selectedDate, onSelectDate, onSwitchToNotes, onSwit
             className={cn(
               "flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors",
               currentView === "reports"
-                ? "bg-white dark:bg-neutral-600 text-neutral-900 dark:text-white shadow-sm"
-                : "text-neutral-600 dark:text-neutral-400",
+                ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-sm"
+                : "text-stone-500 dark:text-stone-400",
             )}
           >
             Bericht
@@ -103,39 +103,40 @@ export function DaySidebar({ selectedDate, onSelectDate, onSwitchToNotes, onSwit
 
       <div className="flex-1 overflow-y-auto p-2">
         {days === undefined ? (
-          <div className="p-4 text-neutral-500 text-sm">Laden...</div>
+          <div className="p-4 text-stone-400 text-sm">Laden...</div>
         ) : days.length === 0 ? (
-          <div className="p-4 text-neutral-500 text-sm text-center">
+          <div className="p-4 text-stone-400 text-sm text-center">
             Noch keine Tage
           </div>
         ) : (
-          <ul className="space-y-1">
+          <ul className="space-y-0.5">
             {[...days].reverse().map((day) => (
               <li key={day._id}>
                 <button
                   onClick={() => onSelectDate(day.date)}
                   className={cn(
-                    "w-full text-left px-3 py-3 md:py-2 rounded-lg flex items-center justify-between",
-                    "transition-colors active:scale-[0.98]",
+                    "w-full text-left px-3 py-2.5 md:py-2 rounded-lg flex items-center justify-between group",
+                    "transition-colors",
                     selectedDate === day.date
-                      ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                      : "hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
+                      ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900"
+                      : "hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400",
                   )}
                 >
-                  <span className="text-sm font-medium">
+                  <span className="text-[13px] font-medium">
                     {formatDate(day.date)}
                   </span>
                   {canEdit && (
                     <button
-                      onClick={(e) => handleDeleteDay(day._id, e)}
+                      onClick={(e) => void handleDeleteDay(day._id, e)}
                       className={cn(
-                        "p-1.5 rounded",
-                        "hover:bg-red-100 dark:hover:bg-red-900/30",
-                        "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
-                        "transition-colors",
+                        "p-1 rounded opacity-0 group-hover:opacity-100",
+                        "transition-opacity",
+                        selectedDate === day.date
+                          ? "hover:bg-white/20 text-white/60 hover:text-white"
+                          : "hover:bg-red-100 dark:hover:bg-red-900/30 text-stone-300 hover:text-red-500 dark:text-stone-600 dark:hover:text-red-400",
                       )}
                     >
-                      <TrashIcon className="size-4" />
+                      <TrashIcon className="size-3.5" />
                     </button>
                   )}
                 </button>
@@ -146,18 +147,19 @@ export function DaySidebar({ selectedDate, onSelectDate, onSwitchToNotes, onSwit
       </div>
 
       {canEdit && (
-        <div className="p-4 border-t border-neutral-200 dark:border-neutral-700">
+        <div className="p-3 border-t border-stone-100 dark:border-stone-800">
           <button
-            onClick={handleCreateToday}
+            onClick={() => void handleCreateToday()}
             className={cn(
-              "w-full py-3 md:py-2 px-4 rounded-lg font-medium text-sm",
-              "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
+              "w-full py-2.5 md:py-2 px-4 rounded-lg font-medium text-[13px]",
+              "bg-stone-900 hover:bg-stone-800 active:bg-stone-700 text-white",
+              "dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900",
               "flex items-center justify-center gap-2",
-              "transition-colors active:scale-[0.98]",
+              "transition-colors",
             )}
           >
-            <PlusIcon className="size-4" />
-            Heute hinzufügen
+            <PlusIcon className="size-3.5" />
+            Heute hinzufugen
           </button>
         </div>
       )}

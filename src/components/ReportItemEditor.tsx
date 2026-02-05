@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MarkdownTabs } from "./MarkdownTabs";
 import { cn } from "../lib/cn";
 import { XIcon } from "lucide-react";
@@ -29,21 +29,23 @@ export function ReportItemEditor({
   const [date, setDate] = useState("");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
+  const [prevIsOpen, setPrevIsOpen] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        setDate(initialData.date);
-        setSubject(initialData.subject);
-        setDescription(initialData.description);
-      } else {
-        // Default to first day of the month
-        setDate(`${month}-01`);
-        setSubject("");
-        setDescription("");
-      }
+  if (isOpen && !prevIsOpen) {
+    setPrevIsOpen(true);
+    if (initialData) {
+      setDate(initialData.date);
+      setSubject(initialData.subject);
+      setDescription(initialData.description);
+    } else {
+      setDate(`${month}-01`);
+      setSubject("");
+      setDescription("");
     }
-  }, [isOpen, initialData, month]);
+  }
+  if (!isOpen && prevIsOpen) {
+    setPrevIsOpen(false);
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,31 +60,31 @@ export function ReportItemEditor({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
       <div
         className={cn(
           "relative w-full max-w-2xl max-h-[90vh] overflow-y-auto",
-          "bg-white dark:bg-neutral-900 rounded-xl shadow-xl",
-          "border border-neutral-200 dark:border-neutral-700",
+          "bg-white dark:bg-stone-900 rounded-xl shadow-xl",
+          "border border-stone-200 dark:border-stone-800",
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-700">
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
+        <div className="flex items-center justify-between p-4 border-b border-stone-100 dark:border-stone-800">
+          <h2 className="text-base font-medium text-stone-900 dark:text-stone-100">
             {initialData ? "Eintrag bearbeiten" : "Neuer Eintrag"}
           </h2>
           <button
             onClick={onClose}
             className={cn(
-              "p-2 rounded-lg",
-              "hover:bg-neutral-100 dark:hover:bg-neutral-800",
-              "text-neutral-500 dark:text-neutral-400",
+              "p-1.5 rounded-lg",
+              "hover:bg-stone-100 dark:hover:bg-stone-800",
+              "text-stone-400 dark:text-stone-500",
               "transition-colors",
             )}
           >
-            <XIcon className="size-5" />
+            <XIcon className="size-4" />
           </button>
         </div>
 
@@ -90,7 +92,7 @@ export function ReportItemEditor({
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label className="block text-[13px] font-medium text-stone-500 dark:text-stone-400 mb-1.5">
               Datum
             </label>
             <input
@@ -99,18 +101,18 @@ export function ReportItemEditor({
               onChange={(e) => setDate(e.target.value)}
               required
               className={cn(
-                "w-full px-3 py-2 rounded-lg",
-                "bg-white dark:bg-neutral-800",
-                "border border-neutral-200 dark:border-neutral-700",
-                "text-neutral-900 dark:text-white",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                "w-full px-3 py-2 rounded-lg text-sm",
+                "bg-stone-50 dark:bg-stone-800",
+                "border border-stone-200 dark:border-stone-700",
+                "text-stone-900 dark:text-stone-100",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500",
               )}
             />
           </div>
 
           {/* Subject */}
           <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label className="block text-[13px] font-medium text-stone-500 dark:text-stone-400 mb-1.5">
               Betreff
             </label>
             <input
@@ -120,38 +122,37 @@ export function ReportItemEditor({
               placeholder="z.B. Meeting, Entwicklung, etc."
               required
               className={cn(
-                "w-full px-3 py-2 rounded-lg",
-                "bg-white dark:bg-neutral-800",
-                "border border-neutral-200 dark:border-neutral-700",
-                "text-neutral-900 dark:text-white",
-                "placeholder:text-neutral-400 dark:placeholder:text-neutral-500",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                "w-full px-3 py-2 rounded-lg text-sm",
+                "bg-stone-50 dark:bg-stone-800",
+                "border border-stone-200 dark:border-stone-700",
+                "text-stone-900 dark:text-stone-100",
+                "placeholder:text-stone-400 dark:placeholder:text-stone-500",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500",
               )}
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            <label className="block text-[13px] font-medium text-stone-500 dark:text-stone-400 mb-1.5">
               Beschreibung (Markdown)
             </label>
             <MarkdownTabs
               value={description}
               onChange={setDescription}
-              placeholder="Beschreibung der Tätigkeit..."
+              placeholder="Beschreibung der Tatigkeit..."
             />
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
               className={cn(
                 "px-4 py-2 rounded-lg font-medium text-sm",
-                "bg-neutral-100 dark:bg-neutral-800",
-                "hover:bg-neutral-200 dark:hover:bg-neutral-700",
-                "text-neutral-700 dark:text-neutral-300",
+                "hover:bg-stone-100 dark:hover:bg-stone-800",
+                "text-stone-500 dark:text-stone-400",
                 "transition-colors",
               )}
             >
@@ -161,8 +162,8 @@ export function ReportItemEditor({
               type="submit"
               className={cn(
                 "px-4 py-2 rounded-lg font-medium text-sm",
-                "bg-blue-600 hover:bg-blue-700 active:bg-blue-800",
-                "text-white",
+                "bg-stone-900 hover:bg-stone-800 text-white",
+                "dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900",
                 "transition-colors",
               )}
             >

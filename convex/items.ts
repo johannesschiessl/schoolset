@@ -59,7 +59,7 @@ export const update = mutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     await validateUserSession(ctx, args.userId, "editor");
-    await ctx.db.patch(args.itemId, { content: args.content });
+    await ctx.db.patch("items", args.itemId, { content: args.content });
     return null;
   },
 });
@@ -73,7 +73,7 @@ export const reorder = mutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     await validateUserSession(ctx, args.userId, "editor");
-    const item = await ctx.db.get(args.itemId);
+    const item = await ctx.db.get("items", args.itemId);
     if (!item) throw new Error("Item not found");
 
     const allItems = await ctx.db
@@ -87,19 +87,19 @@ export const reorder = mutation({
     // Update orders for affected items
     for (const i of allItems) {
       if (i._id === args.itemId) {
-        await ctx.db.patch(i._id, { order: newOrder });
+        await ctx.db.patch("items", i._id, { order: newOrder });
       } else if (
         oldOrder < newOrder &&
         i.order > oldOrder &&
         i.order <= newOrder
       ) {
-        await ctx.db.patch(i._id, { order: i.order - 1 });
+        await ctx.db.patch("items", i._id, { order: i.order - 1 });
       } else if (
         oldOrder > newOrder &&
         i.order >= newOrder &&
         i.order < oldOrder
       ) {
-        await ctx.db.patch(i._id, { order: i.order + 1 });
+        await ctx.db.patch("items", i._id, { order: i.order + 1 });
       }
     }
     return null;
@@ -119,10 +119,10 @@ export const remove = mutation({
 
     for (const attachment of attachments) {
       await ctx.storage.delete(attachment.storageId);
-      await ctx.db.delete(attachment._id);
+      await ctx.db.delete("attachments", attachment._id);
     }
 
-    await ctx.db.delete(args.itemId);
+    await ctx.db.delete("items", args.itemId);
     return null;
   },
 });

@@ -30,7 +30,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       storeSession(session);
       onLogin(session);
     } else {
-      setError("Ungültiger Benutzername oder Passwort");
+      setError("Ungultiger Benutzername oder Passwort");
       setIsChecking(false);
     }
   }
@@ -50,18 +50,18 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950 p-4">
       <div className="w-full max-w-sm">
-        <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 sm:p-8">
-          <h1 className="text-xl sm:text-2xl font-bold text-center mb-2 text-neutral-900 dark:text-white">
+        <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-800 p-7 sm:p-8">
+          <h1 className="text-xl font-semibold text-center mb-1 text-stone-900 dark:text-stone-100 tracking-tight">
             Schoolset
           </h1>
-          <p className="text-neutral-500 dark:text-neutral-400 text-center mb-6 text-sm">
+          <p className="text-stone-400 dark:text-stone-500 text-center mb-7 text-sm">
             Anmelden, um fortzufahren
           </p>
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
+            <div className="space-y-3">
               <input
                 type="text"
                 value={username}
@@ -71,20 +71,18 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 }}
                 placeholder="Benutzername"
                 className={cn(
-                  "w-full px-4 py-3 rounded-lg border bg-neutral-50 dark:bg-neutral-700",
-                  "text-neutral-900 dark:text-white placeholder-neutral-400",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500",
-                  "text-base",
+                  "w-full px-3.5 py-2.5 rounded-lg border bg-stone-50 dark:bg-stone-800/50",
+                  "text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500",
+                  "text-sm",
                   error
-                    ? "border-red-500"
-                    : "border-neutral-200 dark:border-neutral-600",
+                    ? "border-red-400 dark:border-red-500/50"
+                    : "border-stone-200 dark:border-stone-700",
                 )}
                 autoFocus
                 autoComplete="username"
               />
-            </div>
 
-            <div className="mb-4">
               <input
                 type="password"
                 value={password}
@@ -94,31 +92,37 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 }}
                 placeholder="Passwort"
                 className={cn(
-                  "w-full px-4 py-3 rounded-lg border bg-neutral-50 dark:bg-neutral-700",
-                  "text-neutral-900 dark:text-white placeholder-neutral-400",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500",
-                  "text-base",
+                  "w-full px-3.5 py-2.5 rounded-lg border bg-stone-50 dark:bg-stone-800/50",
+                  "text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500",
+                  "text-sm",
                   error
-                    ? "border-red-500"
-                    : "border-neutral-200 dark:border-neutral-600",
+                    ? "border-red-400 dark:border-red-500/50"
+                    : "border-stone-200 dark:border-stone-700",
                 )}
                 autoComplete="current-password"
               />
-              {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
             </div>
+
+            {error && (
+              <p className="mt-3 text-[13px] text-red-500 dark:text-red-400">
+                {error}
+              </p>
+            )}
 
             <button
               type="submit"
               disabled={isChecking}
               className={cn(
-                "w-full py-3 px-4 rounded-lg font-medium",
-                "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                "w-full mt-5 py-2.5 px-4 rounded-lg font-medium text-sm",
+                "bg-stone-900 hover:bg-stone-800 active:bg-stone-700 text-white",
+                "dark:bg-stone-100 dark:hover:bg-stone-200 dark:active:bg-stone-300 dark:text-stone-900",
+                "focus:outline-none focus:ring-2 focus:ring-stone-900/20 dark:focus:ring-stone-100/20",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
-                "transition-colors active:scale-[0.98]",
+                "transition-colors",
               )}
             >
-              {isChecking ? "Wird geprüft..." : "Anmelden"}
+              {isChecking ? "Wird gepruft..." : "Anmelden"}
             </button>
           </form>
         </div>

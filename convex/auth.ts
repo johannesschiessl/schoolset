@@ -111,7 +111,7 @@ export async function validateUserSession(
   userId: Id<"users">,
   requiredPermission: Permission
 ): Promise<void> {
-  const user = await ctx.db.get(userId);
+  const user = await ctx.db.get("users", userId);
   if (!user) {
     throw new Error("User not found");
   }

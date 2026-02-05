@@ -58,15 +58,15 @@ export function ItemRow({
 
   const handleDelete = async () => {
     if (!userId) return;
-    if (confirm("Diesen Eintrag löschen?")) {
+    if (confirm("Diesen Eintrag loschen?")) {
       await removeItem({ userId: userId as Id<"users">, itemId: item._id });
     }
   };
 
   return (
     <li>
-      <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4">
-        <div className="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-600 mt-2 flex-shrink-0" />
+      <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-3.5 group">
+        <div className="w-1.5 h-1.5 rounded-full bg-stone-300 dark:bg-stone-600 mt-2 flex-shrink-0" />
 
         {isEditing ? (
           <div className="flex-1">
@@ -74,15 +74,15 @@ export function ItemRow({
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
               className={cn(
-                "w-full px-3 py-2 rounded-lg border bg-white dark:bg-neutral-700",
-                "text-neutral-900 dark:text-white text-base sm:text-sm",
+                "w-full px-3 py-2 rounded-lg border bg-white dark:bg-stone-800",
+                "text-stone-900 dark:text-stone-100 text-sm",
                 "border-blue-500 focus:outline-none",
                 "resize-none",
               )}
               rows={4}
               autoFocus
               onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSave();
+                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) void handleSave();
                 if (e.key === "Escape") {
                   setEditContent(item.content);
                   setIsEditing(false);
@@ -95,15 +95,17 @@ export function ItemRow({
                   setEditContent(item.content);
                   setIsEditing(false);
                 }}
-                className="px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400"
+                className="px-3 py-1.5 text-sm text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
               >
                 Abbrechen
               </button>
               <button
-                onClick={handleSave}
+                onClick={() => void handleSave()}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium",
-                  "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
+                  "px-4 py-1.5 rounded-lg text-sm font-medium",
+                  "bg-stone-900 hover:bg-stone-800 text-white",
+                  "dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900",
+                  "transition-colors",
                 )}
               >
                 Speichern
@@ -111,25 +113,25 @@ export function ItemRow({
             </div>
           </div>
         ) : (
-          <p className="flex-1 text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap text-sm sm:text-base leading-relaxed">
+          <p className="flex-1 text-stone-600 dark:text-stone-300 whitespace-pre-wrap text-sm leading-relaxed">
             {item.content}
           </p>
         )}
 
         {canEdit && !isEditing && (
-          <div className="flex items-center gap-0.5 flex-shrink-0">
+          <div className="flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
             {!isFirst && (
               <button
                 onClick={onMoveUp}
                 className={cn(
                   "p-1.5 rounded-lg",
-                  "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                  "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                  "hover:bg-stone-100 dark:hover:bg-stone-800",
+                  "text-stone-300 hover:text-stone-500 dark:text-stone-600 dark:hover:text-stone-400",
                   "transition-colors",
                 )}
                 title="Nach oben"
               >
-                <ArrowUpIcon className="size-4" />
+                <ArrowUpIcon className="size-3.5" />
               </button>
             )}
             {!isLast && (
@@ -137,50 +139,50 @@ export function ItemRow({
                 onClick={onMoveDown}
                 className={cn(
                   "p-1.5 rounded-lg",
-                  "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                  "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                  "hover:bg-stone-100 dark:hover:bg-stone-800",
+                  "text-stone-300 hover:text-stone-500 dark:text-stone-600 dark:hover:text-stone-400",
                   "transition-colors",
                 )}
                 title="Nach unten"
               >
-                <ArrowDownIcon className="size-4" />
+                <ArrowDownIcon className="size-3.5" />
               </button>
             )}
             <button
               onClick={() => setShowUpload(true)}
               className={cn(
                 "p-1.5 rounded-lg",
-                "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                "hover:bg-stone-100 dark:hover:bg-stone-800",
+                "text-stone-300 hover:text-stone-500 dark:text-stone-600 dark:hover:text-stone-400",
                 "transition-colors",
               )}
-              title="Anhang hinzufügen"
+              title="Anhang hinzufugen"
             >
-              <PaperclipIcon className="size-4" />
+              <PaperclipIcon className="size-3.5" />
             </button>
             <button
               onClick={() => setIsEditing(true)}
               className={cn(
                 "p-1.5 rounded-lg",
-                "hover:bg-neutral-100 dark:hover:bg-neutral-700",
-                "text-neutral-300 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-300",
+                "hover:bg-stone-100 dark:hover:bg-stone-800",
+                "text-stone-300 hover:text-stone-500 dark:text-stone-600 dark:hover:text-stone-400",
                 "transition-colors",
               )}
               title="Bearbeiten"
             >
-              <PencilIcon className="size-4" />
+              <PencilIcon className="size-3.5" />
             </button>
             <button
-              onClick={handleDelete}
+              onClick={() => void handleDelete()}
               className={cn(
                 "p-1.5 rounded-lg",
-                "hover:bg-red-100 dark:hover:bg-red-900/30",
-                "text-neutral-300 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400",
+                "hover:bg-red-50 dark:hover:bg-red-900/20",
+                "text-stone-300 hover:text-red-500 dark:text-stone-600 dark:hover:text-red-400",
                 "transition-colors",
               )}
-              title="Löschen"
+              title="Loschen"
             >
-              <TrashIcon className="size-4" />
+              <TrashIcon className="size-3.5" />
             </button>
           </div>
         )}

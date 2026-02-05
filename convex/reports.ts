@@ -71,7 +71,7 @@ export const remove = mutation({
     await validateUserSession(ctx, args.userId, "none");
 
     // Verify ownership before deletion
-    const report = await ctx.db.get(args.reportId);
+    const report = await ctx.db.get("reports", args.reportId);
     if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
@@ -91,13 +91,13 @@ export const remove = mutation({
 
       for (const attachment of attachments) {
         await ctx.storage.delete(attachment.storageId);
-        await ctx.db.delete(attachment._id);
+        await ctx.db.delete("reportAttachments", attachment._id);
       }
 
-      await ctx.db.delete(item._id);
+      await ctx.db.delete("reportItems", item._id);
     }
 
-    await ctx.db.delete(args.reportId);
+    await ctx.db.delete("reports", args.reportId);
     return null;
   },
 });

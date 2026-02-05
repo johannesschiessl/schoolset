@@ -19,7 +19,7 @@ export const listByReport = query({
     await validateUserSession(ctx, args.userId, "none");
 
     // Verify report ownership
-    const report = await ctx.db.get(args.reportId);
+    const report = await ctx.db.get("reports", args.reportId);
     if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
@@ -46,7 +46,7 @@ export const create = mutation({
     await validateUserSession(ctx, args.userId, "none");
 
     // Verify report ownership
-    const report = await ctx.db.get(args.reportId);
+    const report = await ctx.db.get("reports", args.reportId);
     if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
@@ -84,12 +84,12 @@ export const update = mutation({
     await validateUserSession(ctx, args.userId, "none");
 
     // Get the report item and verify ownership
-    const item = await ctx.db.get(args.itemId);
+    const item = await ctx.db.get("reportItems", args.itemId);
     if (!item) {
       throw new Error("Report item not found");
     }
 
-    const report = await ctx.db.get(item.reportId);
+    const report = await ctx.db.get("reports", item.reportId);
     if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
@@ -103,7 +103,7 @@ export const update = mutation({
     if (args.subject !== undefined) updates.subject = args.subject;
     if (args.description !== undefined) updates.description = args.description;
 
-    await ctx.db.patch(args.itemId, updates);
+    await ctx.db.patch("reportItems", args.itemId, updates);
     return null;
   },
 });
@@ -118,11 +118,11 @@ export const reorder = mutation({
   handler: async (ctx, args) => {
     await validateUserSession(ctx, args.userId, "none");
 
-    const item = await ctx.db.get(args.itemId);
+    const item = await ctx.db.get("reportItems", args.itemId);
     if (!item) throw new Error("Item not found");
 
     // Verify report ownership
-    const report = await ctx.db.get(item.reportId);
+    const report = await ctx.db.get("reports", item.reportId);
     if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
@@ -139,16 +139,16 @@ export const reorder = mutation({
     // Update orders
     for (const i of items) {
       if (i._id === args.itemId) {
-        await ctx.db.patch(i._id, { order: args.newOrder });
+        await ctx.db.patch("reportItems", i._id, { order: args.newOrder });
       } else if (oldOrder < args.newOrder) {
         // Moving down: shift items in between up
         if (i.order > oldOrder && i.order <= args.newOrder) {
-          await ctx.db.patch(i._id, { order: i.order - 1 });
+          await ctx.db.patch("reportItems", i._id, { order: i.order - 1 });
         }
       } else {
         // Moving up: shift items in between down
         if (i.order >= args.newOrder && i.order < oldOrder) {
-          await ctx.db.patch(i._id, { order: i.order + 1 });
+          await ctx.db.patch("reportItems", i._id, { order: i.order + 1 });
         }
       }
     }
@@ -164,12 +164,12 @@ export const remove = mutation({
     await validateUserSession(ctx, args.userId, "none");
 
     // Get the report item and verify ownership
-    const item = await ctx.db.get(args.itemId);
+    const item = await ctx.db.get("reportItems", args.itemId);
     if (!item) {
       throw new Error("Report item not found");
     }
 
-    const report = await ctx.db.get(item.reportId);
+    const report = await ctx.db.get("reports", item.reportId);
     if (!report || report.userId !== args.userId) {
       throw new Error("Report not found or not owned by user");
     }
@@ -182,10 +182,10 @@ export const remove = mutation({
 
     for (const attachment of attachments) {
       await ctx.storage.delete(attachment.storageId);
-      await ctx.db.delete(attachment._id);
+      await ctx.db.delete("reportAttachments", attachment._id);
     }
 
-    await ctx.db.delete(args.itemId);
+    await ctx.db.delete("reportItems", args.itemId);
     return null;
   },
 });

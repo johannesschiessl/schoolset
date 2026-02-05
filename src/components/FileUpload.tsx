@@ -82,32 +82,33 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    handleUpload(e.dataTransfer.files);
+    void handleUpload(e.dataTransfer.files);
   };
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50"
       onClick={onClose}
     >
       <div
         className={cn(
-          "bg-white dark:bg-neutral-800 p-4 sm:p-6 w-full shadow-xl",
+          "bg-white dark:bg-stone-900 p-4 sm:p-6 w-full shadow-xl",
           "sm:rounded-xl sm:max-w-md sm:mx-4",
           "rounded-t-xl",
+          "border-t sm:border border-stone-200 dark:border-stone-800",
         )}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-neutral-900 dark:text-white">
+          <h3 className="font-medium text-sm text-stone-900 dark:text-stone-100">
             Anhang hochladen
           </h3>
           <button
             onClick={onClose}
             disabled={uploading}
-            className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500 disabled:opacity-50"
+            className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-400 disabled:opacity-50"
           >
-            <XIcon className="size-5" />
+            <XIcon className="size-4" />
           </button>
         </div>
 
@@ -117,35 +118,35 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
           className={cn(
-            "border-2 border-dashed rounded-xl p-6 sm:p-8",
+            "border border-dashed rounded-xl p-6 sm:p-8",
             "flex flex-col items-center justify-center gap-3",
             "cursor-pointer transition-colors",
             isDragging
               ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-              : "border-neutral-300 dark:border-neutral-600 hover:border-blue-400 active:border-blue-500",
+              : "border-stone-300 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-600",
             uploading && "pointer-events-none opacity-50",
           )}
         >
           {uploading ? (
             <>
-              <Loader2Icon className="size-10 text-blue-500 animate-spin" />
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center">
+              <Loader2Icon className="size-8 text-stone-400 animate-spin" />
+              <p className="text-sm text-stone-500 dark:text-stone-400 text-center">
                 {uploadProgress}
               </p>
             </>
           ) : (
             <>
-              <div className="p-3 rounded-full bg-neutral-100 dark:bg-neutral-700">
-                <UploadIcon className="size-8 text-neutral-500 dark:text-neutral-400" />
+              <div className="p-2.5 rounded-full bg-stone-100 dark:bg-stone-800">
+                <UploadIcon className="size-6 text-stone-400 dark:text-stone-500" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                <p className="text-sm text-stone-600 dark:text-stone-400">
                   <span className="hidden sm:inline">
-                    Dateien hierher ziehen oder klicken zum Durchsuchen
+                    Dateien hierher ziehen oder klicken
                   </span>
-                  <span className="sm:hidden">Tippen zum Auswählen</span>
+                  <span className="sm:hidden">Tippen zum Auswahlen</span>
                 </p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">
                   Bilder, PDFs und Dokumente
                 </p>
               </div>
@@ -157,7 +158,7 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
           ref={fileInputRef}
           type="file"
           multiple
-          onChange={(e) => handleUpload(e.target.files)}
+          onChange={(e) => void handleUpload(e.target.files)}
           className="hidden"
           accept="image/*,.pdf,.doc,.docx,.txt,.md"
         />
@@ -167,9 +168,8 @@ export function FileUpload({ itemId, onClose }: FileUploadProps) {
           onClick={onClose}
           disabled={uploading}
           className={cn(
-            "sm:hidden w-full mt-4 py-3 rounded-lg font-medium",
-            "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
-            "active:bg-neutral-200 dark:active:bg-neutral-600",
+            "sm:hidden w-full mt-4 py-3 rounded-lg font-medium text-sm",
+            "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300",
             "disabled:opacity-50",
           )}
         >

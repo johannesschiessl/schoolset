@@ -12,44 +12,45 @@ interface ColorPickerProps {
 export function ColorPicker({ selected, onSelect, onClose }: ColorPickerProps) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50"
       onClick={onClose}
     >
       <div
         className={cn(
-          "bg-white dark:bg-neutral-800 p-4 w-full shadow-xl",
+          "bg-white dark:bg-stone-900 p-4 w-full shadow-xl",
           "sm:rounded-xl sm:max-w-sm sm:mx-4",
           "rounded-t-xl",
+          "border-t sm:border border-stone-200 dark:border-stone-800",
         )}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-neutral-900 dark:text-white">
-            Farbe auswählen
+          <h3 className="font-medium text-sm text-stone-900 dark:text-stone-100">
+            Farbe auswahlen
           </h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500"
+            className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-400"
           >
-            <XIcon className="size-5" />
+            <XIcon className="size-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-6 gap-2 sm:gap-2">
+        <div className="grid grid-cols-6 gap-2">
           {TOPIC_COLOR_OPTIONS.map((option) => (
             <button
               key={option.name}
-              onClick={() => onSelect(option.name as TopicColor)}
+              onClick={() => onSelect(option.name)}
               className={cn(
-                "w-10 h-10 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center",
+                "w-10 h-10 rounded-lg flex items-center justify-center",
                 "active:scale-90 transition-transform",
                 option.bg,
                 selected === option.name &&
-                  "ring-2 ring-offset-2 ring-blue-500",
+                  "ring-2 ring-offset-2 ring-stone-900 dark:ring-stone-100 dark:ring-offset-stone-900",
               )}
             >
               {selected === option.name && (
-                <CheckIcon className={cn("size-5", option.text)} />
+                <CheckIcon className={cn("size-4", option.text)} />
               )}
             </button>
           ))}
@@ -59,12 +60,11 @@ export function ColorPicker({ selected, onSelect, onClose }: ColorPickerProps) {
         <button
           onClick={onClose}
           className={cn(
-            "sm:hidden w-full mt-4 py-3 rounded-lg font-medium",
-            "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
-            "active:bg-neutral-200 dark:active:bg-neutral-600",
+            "sm:hidden w-full mt-4 py-3 rounded-lg font-medium text-sm",
+            "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300",
           )}
         >
-          Schließen
+          Schliessen
         </button>
       </div>
     </div>

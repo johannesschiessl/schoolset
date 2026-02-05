@@ -89,22 +89,23 @@ export function DayView({ date }: DayViewProps) {
   if (day === null) {
     return (
       <div className="p-4 sm:p-8 flex flex-col items-center justify-center h-full">
-        <CalendarIcon className="size-12 sm:size-16 text-neutral-300 dark:text-neutral-600 mb-4" />
-        <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-white mb-2 text-center">
+        <CalendarIcon className="size-12 sm:size-14 text-stone-200 dark:text-stone-700 mb-4" />
+        <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-1.5 text-center">
           <span className="hidden sm:inline">{formatDisplayDate(date)}</span>
           <span className="sm:hidden">{formatShortDate(date)}</span>
         </h2>
-        <p className="text-neutral-500 dark:text-neutral-400 mb-4 text-sm sm:text-base">
-          Noch keine Einträge für diesen Tag
+        <p className="text-stone-400 dark:text-stone-500 mb-5 text-sm">
+          Noch keine Eintrage fur diesen Tag
         </p>
         {canEdit && (
           <button
-            onClick={handleCreateDay}
+            onClick={() => void handleCreateDay()}
             className={cn(
-              "py-3 px-6 rounded-lg font-medium text-sm",
-              "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
+              "py-2.5 px-5 rounded-lg font-medium text-sm",
+              "bg-stone-900 hover:bg-stone-800 active:bg-stone-700 text-white",
+              "dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900",
               "flex items-center gap-2",
-              "transition-colors active:scale-[0.98]",
+              "transition-colors",
             )}
           >
             <PlusIcon className="size-4" />
@@ -118,57 +119,55 @@ export function DayView({ date }: DayViewProps) {
   // Loading
   if (day === undefined || lessons === undefined) {
     return (
-      <div className="p-4 sm:p-8">
+      <div className="p-4 sm:p-8 max-w-3xl mx-auto">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3"></div>
-          <div className="h-32 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
-          <div className="h-32 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+          <div className="h-7 bg-stone-100 dark:bg-stone-800 rounded w-1/3"></div>
+          <div className="h-28 bg-stone-100 dark:bg-stone-800 rounded-xl"></div>
+          <div className="h-28 bg-stone-100 dark:bg-stone-800 rounded-xl"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-8 max-w-4xl mx-auto">
-      <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white mb-4 sm:mb-6">
+    <div className="p-4 sm:p-8 max-w-3xl mx-auto">
+      <h2 className="text-lg sm:text-xl font-semibold text-stone-900 dark:text-stone-100 mb-5 sm:mb-6 tracking-tight">
         <span className="hidden sm:inline">{formatDisplayDate(date)}</span>
         <span className="sm:hidden">{formatShortDate(date)}</span>
       </h2>
 
-      <div className="space-y-3 sm:space-y-4">
+      <div className="space-y-3">
         {lessons.map((lesson, index) => (
           <LessonCard
             key={lesson._id}
             lesson={lesson}
             isFirst={index === 0}
             isLast={index === lessons.length - 1}
-            onMoveUp={() => handleMoveLesson(lesson._id, "up")}
-            onMoveDown={() => handleMoveLesson(lesson._id, "down")}
+            onMoveUp={() => void handleMoveLesson(lesson._id, "up")}
+            onMoveDown={() => void handleMoveLesson(lesson._id, "down")}
           />
         ))}
 
         {lessons.length === 0 && !showNewLesson && (
-          <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
-            Noch keine Stunden hinzugefügt
+          <div className="text-center py-8 text-stone-400 dark:text-stone-500 text-sm">
+            Noch keine Stunden hinzugefugt
           </div>
         )}
 
         {/* Add new lesson form */}
         {canEdit && showNewLesson && (
-          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700">
+          <div className="bg-white dark:bg-stone-900 rounded-xl p-4 border border-stone-200 dark:border-stone-800">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowIconPicker(true)}
-                  className="p-2 rounded-lg bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 hover:border-blue-500 transition-colors"
+                  className="p-2 rounded-lg bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-500 transition-colors"
                 >
                   <span className="text-lg">{newLessonIcon}</span>
                 </button>
                 <button
                   onClick={() => setShowColorPicker(true)}
-                  className={cn(
-                    "w-8 h-8 rounded-lg border border-neutral-200 dark:border-neutral-600 hover:border-blue-500 transition-colors",
-                  )}
+                  className="w-8 h-8 rounded-lg border border-stone-200 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-500 transition-colors"
                   style={{
                     backgroundColor: `var(--color-${newLessonColor}-500, #3b82f6)`,
                   }}
@@ -180,15 +179,15 @@ export function DayView({ date }: DayViewProps) {
                 onChange={(e) => setNewLessonName(e.target.value)}
                 placeholder="Name der Stunde (z.B. Mathematik)"
                 className={cn(
-                  "flex-1 px-4 py-3 sm:py-2 rounded-lg border bg-white dark:bg-neutral-700",
-                  "text-neutral-900 dark:text-white placeholder-neutral-400",
-                  "border-neutral-200 dark:border-neutral-600",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500",
-                  "text-base sm:text-sm",
+                  "flex-1 px-3.5 py-2.5 sm:py-2 rounded-lg border bg-stone-50 dark:bg-stone-800",
+                  "text-stone-900 dark:text-stone-100 placeholder-stone-400",
+                  "border-stone-200 dark:border-stone-700",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500",
+                  "text-sm",
                 )}
                 autoFocus
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCreateLesson();
+                  if (e.key === "Enter") void handleCreateLesson();
                   if (e.key === "Escape") setShowNewLesson(false);
                 }}
               />
@@ -196,21 +195,22 @@ export function DayView({ date }: DayViewProps) {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowNewLesson(false)}
-                className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                className="px-3 py-1.5 text-sm text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
               >
                 Abbrechen
               </button>
               <button
-                onClick={handleCreateLesson}
+                onClick={() => void handleCreateLesson()}
                 disabled={!newLessonName.trim()}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium",
-                  "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white",
-                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  "px-4 py-1.5 rounded-lg text-sm font-medium",
+                  "bg-stone-900 hover:bg-stone-800 text-white",
+                  "dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900",
+                  "disabled:opacity-40 disabled:cursor-not-allowed",
                   "transition-colors",
                 )}
               >
-                Stunde hinzufügen
+                Hinzufugen
               </button>
             </div>
           </div>
@@ -220,16 +220,16 @@ export function DayView({ date }: DayViewProps) {
           <button
             onClick={() => setShowNewLesson(true)}
             className={cn(
-              "w-full py-4 sm:py-3 px-4 rounded-xl font-medium text-sm",
-              "border-2 border-dashed border-neutral-300 dark:border-neutral-600",
-              "text-neutral-500 dark:text-neutral-400",
-              "hover:border-blue-500 hover:text-blue-500 active:bg-blue-50 dark:active:bg-blue-900/20",
+              "w-full py-3.5 sm:py-3 px-4 rounded-xl font-medium text-sm",
+              "border border-dashed border-stone-300 dark:border-stone-700",
+              "text-stone-400 dark:text-stone-500",
+              "hover:border-stone-400 hover:text-stone-500 dark:hover:border-stone-600 dark:hover:text-stone-400",
               "flex items-center justify-center gap-2",
               "transition-colors",
             )}
           >
             <PlusIcon className="size-4" />
-            Stunde hinzufügen
+            Stunde hinzufugen
           </button>
         )}
       </div>

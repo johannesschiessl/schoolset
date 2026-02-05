@@ -80,14 +80,14 @@ export const remove = mutation({
 
         for (const attachment of attachments) {
           await ctx.storage.delete(attachment.storageId);
-          await ctx.db.delete(attachment._id);
+          await ctx.db.delete("attachments", attachment._id);
         }
-        await ctx.db.delete(item._id);
+        await ctx.db.delete("items", item._id);
       }
-      await ctx.db.delete(lesson._id);
+      await ctx.db.delete("lessons", lesson._id);
     }
 
-    await ctx.db.delete(args.dayId);
+    await ctx.db.delete("days", args.dayId);
     return null;
   },
 });

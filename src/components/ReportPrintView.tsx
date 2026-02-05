@@ -47,7 +47,7 @@ export const ReportPrintView = forwardRef<HTMLDivElement, ReportPrintViewProps>(
         style={{
           width: "210mm",
           minHeight: "297mm",
-          fontFamily: "system-ui, -apple-system, sans-serif",
+          fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
           backgroundColor: "#ffffff",
           color: "#1a1a1a",
           padding: "40px 48px",

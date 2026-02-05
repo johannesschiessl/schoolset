@@ -28,33 +28,22 @@ export function AttachmentList({ itemId }: AttachmentListProps) {
     return null;
   }
 
-  const getIcon = (contentType: string) => {
-    if (contentType.startsWith("image/")) {
-      return ImageIcon;
-    }
-    if (contentType === "application/pdf" || contentType.includes("text")) {
-      return FileTextIcon;
-    }
-    return FileIcon;
-  };
-
   const handleDelete = async (attachmentId: Id<"attachments">) => {
     if (!userId) return;
-    if (confirm("Diesen Anhang löschen?")) {
+    if (confirm("Diesen Anhang loschen?")) {
       await deleteAttachment({ userId: userId as Id<"users">, attachmentId });
     }
   };
 
   return (
-    <div className="px-3 sm:px-4 pb-3 sm:pb-4 pl-7 sm:pl-9">
-      <div className="flex flex-wrap gap-2">
+    <div className="px-3 sm:px-3.5 pb-3 sm:pb-3.5 pl-7 sm:pl-9">
+      <div className="flex flex-wrap gap-1.5">
         {attachments.map((attachment) => (
           <AttachmentItem
             key={attachment._id}
             attachment={attachment}
-            onDelete={() => handleDelete(attachment._id)}
+            onDelete={() => void handleDelete(attachment._id)}
             canEdit={canEdit}
-            getIcon={getIcon}
           />
         ))}
       </div>
@@ -71,14 +60,12 @@ interface AttachmentItemProps {
   };
   onDelete: () => void;
   canEdit: boolean;
-  getIcon: (contentType: string) => typeof FileIcon;
 }
 
 function AttachmentItem({
   attachment,
   onDelete,
   canEdit,
-  getIcon,
 }: AttachmentItemProps) {
   const userId = getUserId();
   const downloadUrl = useQuery(
@@ -86,44 +73,47 @@ function AttachmentItem({
     userId ? { userId: userId as Id<"users">, storageId: attachment.storageId } : "skip",
   );
 
-  const Icon = getIcon(attachment.contentType);
   const isImage = attachment.contentType.startsWith("image/");
 
   return (
     <div
       className={cn(
-        "group relative flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg",
-        "bg-neutral-100 dark:bg-neutral-700",
-        "border border-neutral-200 dark:border-neutral-600",
+        "group relative flex items-center gap-2 px-2.5 py-1.5 rounded-lg",
+        "bg-stone-50 dark:bg-stone-800",
+        "border border-stone-200 dark:border-stone-700",
       )}
     >
       {isImage && downloadUrl ? (
         <img
           src={downloadUrl}
           alt={attachment.filename}
-          className="w-6 h-6 sm:w-8 sm:h-8 object-cover rounded"
+          className="w-6 h-6 object-cover rounded"
         />
+      ) : isImage ? (
+        <ImageIcon className="size-4 text-stone-400 dark:text-stone-500" />
+      ) : attachment.contentType === "application/pdf" || attachment.contentType.includes("text") ? (
+        <FileTextIcon className="size-4 text-stone-400 dark:text-stone-500" />
       ) : (
-        <Icon className="size-4 sm:size-5 text-neutral-500 dark:text-neutral-400" />
+        <FileIcon className="size-4 text-stone-400 dark:text-stone-500" />
       )}
 
-      <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 max-w-24 sm:max-w-32 truncate">
+      <span className="text-xs text-stone-600 dark:text-stone-400 max-w-28 truncate">
         {attachment.filename}
       </span>
 
-      <div className="flex items-center gap-0.5 sm:gap-1">
+      <div className="flex items-center gap-0.5">
         {downloadUrl && (
           <a
             href={downloadUrl}
             download={attachment.filename}
             className={cn(
-              "p-1.5 rounded",
-              "hover:bg-neutral-200 dark:hover:bg-neutral-600",
-              "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300",
+              "p-1 rounded",
+              "hover:bg-stone-200 dark:hover:bg-stone-700",
+              "text-stone-400 hover:text-stone-600 dark:hover:text-stone-300",
             )}
             title="Herunterladen"
           >
-            <DownloadIcon className="size-4" />
+            <DownloadIcon className="size-3.5" />
           </a>
         )}
 
@@ -131,15 +121,15 @@ function AttachmentItem({
           <button
             onClick={onDelete}
             className={cn(
-              "p-1.5 rounded",
+              "p-1 rounded",
               "sm:opacity-0 sm:group-hover:opacity-100",
-              "hover:bg-red-100 dark:hover:bg-red-900/30",
-              "text-neutral-500 hover:text-red-600",
+              "hover:bg-red-50 dark:hover:bg-red-900/20",
+              "text-stone-400 hover:text-red-500",
               "transition-opacity",
             )}
-            title="Löschen"
+            title="Loschen"
           >
-            <TrashIcon className="size-4" />
+            <TrashIcon className="size-3.5" />
           </button>
         )}
       </div>
